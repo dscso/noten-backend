@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api
+import db
 
 app = Flask(__name__)
 api = Api(app)
