@@ -13,6 +13,7 @@ class Home(Resource):
 
 class Login(Resource):
     def post(self):
+        # username= password=
         return {
             "access_token":"MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3",
             "token_type":"bearer",
