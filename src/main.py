@@ -1,10 +1,13 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from time import time
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///D:\\nerd\\GitHub\\noten_backend\\test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///D:\\nerd\\GitHub\\noten_backend\\database.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+print("Mip")
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -39,6 +42,6 @@ def index():
     return "index here"
 
 if __name__ == '__main__':
-    from models.user import User
+    from models import *
     from auth import auth
     app.run(debug=True, port=5000)
