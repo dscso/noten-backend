@@ -2,6 +2,8 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from time import time
 import datetime
+import os 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 # initialize 'app' with Flask instance
@@ -16,6 +18,7 @@ db = SQLAlchemy(app)
 
 # Hello.
 print("Mip.")
+print(dir_path)
 
 # ROUTING
 
@@ -28,13 +31,13 @@ def login():
             if(token != None):
                 return token_auth(uid, token)
         else:
-            mail = request.args.get("mail")
-            pwhash = request.args.get("hash")
+            mail = request.form.get("mail")
+            pwhash = request.form.get("hash")
             if(mail != None and pwhash != None):
                 return auth(mail, pwhash)
         return "argument error"
     else:
-        return "login form here"
+        return render_template('login.html')
 
 # TODO add user exists check!!!
 @app.route("/register", methods=["GET","POST"])
