@@ -10,6 +10,7 @@ class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(120), unique=True)
     pwhash = db.Column(db.String, unique=True)
+    is_teacher = db.Column(db.Boolean, default=False)
     token = db.relationship("Token", backref=db.backref("user", uselist=False), lazy=True)
     #token = relationship("Child", uselist=False, back_populates="parent")
 
@@ -17,6 +18,9 @@ class User(db.Model):
         token = self.token[0]
         # TODO: modify timestamp?
         return { "uid": self.uid, "token": str(token.token), "expiration": str(token.expiration.timestamp() * 1000) }
+
+    def is_teacher():
+        return self.is_teacher
 
 
 # Token Model (Database)
