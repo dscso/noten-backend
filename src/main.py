@@ -1,27 +1,42 @@
 from flask import Flask, abort, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from time import time
+import datetime
 
+
+# initialize 'app' with Flask instance
 app = Flask(__name__)
+
+#configure sqlalchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///D:\\nerd\\GitHub\\noten_backend\\database.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# initialize 'db' with SQLAlchemy instance
 db = SQLAlchemy(app)
 
-print("Mip")
+# Hello.
+print("Mip.")
+
+# ROUTING
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if(request.method == 'POST'):
-        print(len(request.args))
-        mail = request.args.get("mail")
-        pwhash = request.args.get("hash")
-        if(mail != None and hash != None):
-            return auth(mail, pwhash)
+        uid = request.args.get("uid")
+        if(uid != None):
+            token = request.args.get("token")
+            if(token != None):
+                return token_auth(uid, token)
         else:
-            return "argument error"
+            mail = request.args.get("mail")
+            pwhash = request.args.get("hash")
+            if(mail != None and pwhash != None):
+                return auth(mail, pwhash)
+        return "argument error"
     else:
         return "login form here"
 
+# TODO add user exists check!!!
 @app.route("/register", methods=["GET","POST"])
 def register():
     if(request.method == 'POST'):
@@ -42,7 +57,8 @@ def index():
     #TODO load index file
     return "index here"
 
+# run the app
 if __name__ == '__main__':
     from models import *
-    from auth import auth
+    from auth import *
     app.run(debug=True, port=5000)
