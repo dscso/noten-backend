@@ -1,4 +1,3 @@
-from sqlalchemy.orm import relationship
 import main
 db = main.db
 

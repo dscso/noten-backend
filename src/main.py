@@ -12,6 +12,7 @@ print("Mip")
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if(request.method == 'POST'):
+        print(len(request.args))
         mail = request.args.get("mail")
         pwhash = request.args.get("hash")
         if(mail != None and hash != None):
