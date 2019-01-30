@@ -9,6 +9,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.db
+
 # C extensions
 *.so
 
@@ -110,3 +112,4 @@ venv.bak/
 .mypy_cache/
 
 
+database.db
