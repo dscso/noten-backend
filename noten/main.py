@@ -71,7 +71,7 @@ def register():
             u = User(mail=mail, pwhash=pwhash)
             db.session.add(u)
             db.session.commit()
-            return url_for("index")
+            return "created"
         else:
             return sendError(400, "bad request", "main.py#register")
     else:

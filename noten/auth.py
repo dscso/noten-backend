@@ -21,7 +21,7 @@ def auth(mail, pwhash):
                 token.token = generate_token()
                 token.update_expiration()
             else:
-                token = Token(uid=user.uid, token=generate_token())
+                token = models.Token(uid=user.uid, token=generate_token())
                 db.session.add(token)
             updateCookies(user, token)
             db.session.commit()
@@ -48,8 +48,8 @@ def login_required(func):
         if(uid != None and token != None):
             if(verify_token(uid, token)):
                 return func(*args, **kwargs)
-        ##if not current_user.is_authenticated:
-        ##    return current_app.login_manager.unauthorized()
+        # TODO redirect?
+        # return redirect(url_for("login"))
         return main.sendError(401, "login requiered", "decorator")
     return decorated_view
 
