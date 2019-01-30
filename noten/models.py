@@ -10,17 +10,17 @@ class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(120), unique=True)
     pwhash = db.Column(db.String, unique=True)
-    is_teacher = db.Column(db.Boolean, default=False)
+    usertype = db.Column(db.Integer, default=0)
     token = db.relationship("Token", backref=db.backref("user", uselist=False), lazy=True)
     #token = relationship("Child", uselist=False, back_populates="parent")
 
     def json(self):
         token = self.token[0]
         # TODO: modify timestamp?
-        return { "uid": self.uid, "token": str(token.token), "expiration": str(token.expiration.timestamp() * 1000) }
+        return { "expiration": str(token.expiration.timestamp() * 1000), "token": str(token.token), "type":self.usertype, "uid": self.uid }
 
-    def is_teacher():
-        return self.is_teacher
+    def is_teacher(self):
+        return self.usertype
 
 
 # Token Model (Database)
