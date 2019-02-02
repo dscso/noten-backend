@@ -14,7 +14,9 @@ import datetime
 
 # initialize 'app' with Flask instance
 app = Flask(__name__)
-app.secret_key = b'x"(ka7:is=7a_+/ayT5'
+f=open("secret.key", "r")
+app.secret_key = f.read()
+print(app.secret_key)
 #configure sqlalchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///../database.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

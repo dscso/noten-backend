@@ -3,23 +3,17 @@ from datetime import datetime
 from time import time
 db = main.db
 
-default_shorts = db.Table("default_shorts",
-                          db.Column("subid", db.Integer, db.ForeignKey("subjects.subid"), primary_key=True),
-                          db.Column("short", db.String(4))
-                          )
-
 # User Model (Database)
-
-
 class User(db.Model):
     __tablename__ = 'users'
     uid = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(120), unique=True)
+    name = db.Column(db.String)
+    forename = db.Column(db.String)
     pwhash = db.Column(db.String)
     usertype = db.Column(db.Integer, default=0)
     token = db.relationship("Token", backref=db.backref(
         "users", uselist=False), lazy=True)
-    #token = relationship("Child", uselist=False, back_populates="parent")
 
     def json(self):
         token = self.token[0]
@@ -51,9 +45,9 @@ class Token(db.Model):
 #Fachleiter?
 class Subject(db.Model):
     __tablename__ = "subjects"
-    subid = db.Column("subid", db.Integer, primary_key=True)
-    subname = db.Column("subname", db.String)
-    short = db.relationship("default_shorts", backref=db.backref("subject", uselist=False), lazy=True)
+    subid = db.Column(db.Integer, primary_key=True)
+    subname = db.Column(db.String)
+    short = db.Column(db.String(4))
 
 class Course(db.Model):
     __tablename__ = "courses"
@@ -61,8 +55,8 @@ class Course(db.Model):
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
     subjectid = db.Column(db.Integer, db.ForeignKey("subjects.subid"))
 
-    clazz = db.relationship("classes", backref=db.backref("courses", uselist=False), lazy=True)
-    subject = db.relationship("subjects", backref=db.backref("courses", uselist=False), lazy=True)
+    clazz = db.relationship("Class", backref=db.backref("course"), lazy=True)
+    subject = db.relationship("Subject", backref=db.backref("course"), lazy=True)
 
 class Class(db.Model):
     __tablename__ = "classes"
@@ -70,5 +64,8 @@ class Class(db.Model):
     grade = db.Column(db.Integer)
     label = db.Column(db.String)
     #teacher = db.relationship("Teacher", backref=db.backref("class"), lazy=True)
-    
+
+
 db.create_all()
+import defaults
+defaults.load_defaults()
