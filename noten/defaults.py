@@ -1,5 +1,5 @@
 from main import db
-from models import Subject, Class
+from models import Subject, Class, Course
 
 def update_sub(subid, subname, short):
     sub = Subject.query.filter_by(subid=subid).first()
@@ -17,6 +17,14 @@ def update_class(classid, grade, label):
     else:
         db.session.add(Class(classid=classid, grade=grade, label=label))
 
+def update_course(cid, classid, subjectid, ctype):
+    course = Course.query.filter_by(cid=cid).first()
+    if(course != None):
+        course.classid = classid
+        course.subjectid = subjectid
+        course.ctype = ctype
+    else:
+        db.session.add(Course(cid=cid, classid=classid, subjectid=subjectid, ctype=ctype))
 
 def load_defaults():
 
@@ -55,5 +63,9 @@ def load_defaults():
     update_class(classid=2, grade=10, label="A")
     update_class(classid=3, grade=11, label="")
     update_class(classid=4, grade=12, label="")
+
+    update_course(1, 4, 4, 2)
+    update_course(2, 1, 24, 0)
+    update_course(3, 2, 22, 0)
 
     db.session.commit()

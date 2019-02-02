@@ -54,6 +54,7 @@ class Course(db.Model):
     cid = db.Column(db.Integer, primary_key=True)
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
     subjectid = db.Column(db.Integer, db.ForeignKey("subjects.subid"))
+    ctype = db.Column(db.Integer)
 
     clazz = db.relationship("Class", backref=db.backref("course"), lazy=True)
     subject = db.relationship("Subject", backref=db.backref("course"), lazy=True)
