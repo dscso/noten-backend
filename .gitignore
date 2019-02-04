@@ -10,6 +10,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+secret.key
+
+*.db
+
 # C extensions
 *.so
 
@@ -111,3 +115,4 @@ venv.bak/
 .mypy_cache/
 
 
+database.db

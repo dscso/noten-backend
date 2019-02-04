@@ -1,0 +1,42 @@
+html {
+    #background: #535b7c;
+    background: #28356c;
+}
+
+#login-wrapper {
+    position: absolute;
+    top: 25%;
+    min-width: 100% !important;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    align-self: center;
+}
+
+#frame {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    width: 290;
+    border-style: solid;
+    border-color: #ffffff;
+    border-width: 2px;
+}
+
+.un {
+	background-color: yellow;
+    margin-top: 35px;margin-bottom: 6px;
+}
+
+.pw {
+    margin-bottom: 16px; margin-top: 6px;
+}
+
+#lbtn {
+	background: transparent;
+	margin-bottom: 25px;
+	border-style: solid;
+	border-color: #fff;
+	border-width: 2px;
+	color: white;
+}
