@@ -5,6 +5,7 @@ import inspect
 
 from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from time import time
 import datetime
 
@@ -14,6 +15,7 @@ import datetime
 
 # initialize 'app' with Flask instance
 app = Flask(__name__)
+CORS(app)
 f=open("secret.key", "r")
 app.secret_key = f.read()
 print(app.secret_key)
@@ -25,7 +27,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from models import *
-from auth import *
+from auth import auth, login_required, usertype_required, decor
 
 # Hello.
 print("Mip.")
@@ -69,8 +71,10 @@ def register():
     if(request.method == 'POST'):
         mail = request.args.get("mail")
         pwhash = request.args.get("hash")
+        name = request.args.get("name")
+        firstname = request.args.get("firstname")
         if(mail != None and hash != None):
-            u = User(mail=mail, pwhash=pwhash)
+            u = User(mail=mail, name=name, firstname=firstname, pwhash=pwhash)
             db.session.add(u)
             db.session.commit()
             return "created"
@@ -79,8 +83,13 @@ def register():
     else:
         return sendError(405, "post method required", "main.py#register")
 
+@app.route("/ccp")
+@usertype_required(2)
+def ccp():
+    return "skkrrr"
+
 def sendError(code, msg="", cause=""):
-    print(code)
+    #print(code)
     return render_template("error.html", code=code, cause=cause, msg=msg)
 
 # run the app

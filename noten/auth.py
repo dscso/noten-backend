@@ -11,7 +11,6 @@ db = main.db
 # matches login credentials with db - return status-string
 # TODO response error code with flask.Request
 
-
 def auth(mail, pwhash):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
@@ -25,7 +24,8 @@ def auth(mail, pwhash):
                 db.session.add(token)
             updateCookies(user, token)
             db.session.commit()
-            return redirect(url_for("index"), 302)
+            return jsonify(user.json())
+            #return redirect(url_for("index"), 302)
     session.clear()
     return main.sendError(401, "login failed", "auth.py#auth")
 
@@ -52,6 +52,42 @@ def login_required(func):
         # return redirect(url_for("login"))
         return main.sendError(401, "login requiered", "decorator")
     return decorated_view
+
+
+def login_required1(f):
+    def decorator(f):
+        uid = session.get('uid')
+        token = session.get('token')
+        if(uid != None and token != None):
+            if(verify_token(uid, token)):
+                return f()
+        # TODO redirect?
+        # return redirect(url_for("login"))
+        return main.sendError(401, "login requiered", "decorator")
+    return decorator
+
+def decor(awd, xw):
+    def decorator(f):
+        print("a")
+        print(awd)
+        print(xw)
+        return f
+    return decorator
+
+def usertype_required(usertype):
+    @wraps
+    def decorator(f):
+        uid = session.get('uid')
+        if(uid != None):
+            user = models.User.query.filter_by(uid=uid).first()
+            db_type = user.usertype if user != None else None
+            if(user != None and db_type != None):
+                if(db_type == usertype):
+                    return f
+        # TODO redirect?
+        # return redirect(url_for("login"))
+        return main.sendError(401, "no perission", "usertype")
+    return decorator
 
 def verify_token(uid, token):
     user = models.User.query.filter_by(uid=uid).first()
