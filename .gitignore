@@ -2,16 +2,18 @@
 ._*
 .DS_Store
 .vscode/
+*.db
+secret.key
 
+
+
+# python files (standard gitignore)
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-secret.key
-
-*.db
 
 # C extensions
 *.so
