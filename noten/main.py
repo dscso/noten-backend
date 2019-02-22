@@ -58,12 +58,12 @@ def login():
         #         return verify_token(uid, token)  
         # else:
         mail = request.form.get("mail")
-        pwhash = request.form.get("hash")
+        pwhash = request.form.get("password")
         if(mail != None and pwhash != None):
             return auth(mail, pwhash)
-        return sendError(400, "bad request", "main.py#login")
+        return sendError(400, "Bad request")
     else:
-        return render_template('login.html')
+        return sendError(405, "Method not allowed")
 
 # TODO add user exists check!!!
 @app.route("/register", methods=["GET","POST"])
@@ -79,9 +79,9 @@ def register():
             db.session.commit()
             return "created"
         else:
-            return sendError(400, "bad request", "main.py#register")
+            return sendError(400, "Bad request")
     else:
-        return sendError(405, "post method required", "main.py#register")
+        return sendError(405, "Method not allowed")
 
 @app.route("/ccp")
 @usertype_required(2)
@@ -89,8 +89,9 @@ def ccp():
     return "skkrrr"
 
 def sendError(code, msg="", cause=""):
-    #print(code)
-    return render_template("error.html", code=code, cause=cause, msg=msg)
+    #print(code)#
+    return jsonify({"error": code, "msg":msg}), code
+    #return render_template("error.html", code=code, cause=cause, msg=msg)
 
 # run the app
 if __name__ == '__main__':
