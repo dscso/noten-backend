@@ -43,10 +43,19 @@ def img(path):
     return send_from_directory("templates/img", path)
 
 @app.route("/")
-@login_required
 def index():
+    return jsonify({
+        "version":"v0.1"
+    })
+
+@app.route("/me")
+@login_required
+def me():
     #TODO load index file
     return "index here"
+
+
+# ----------------------------  LOGIN  ---------------------------------------
 
 @app.route("/login", methods=['POST'])
 def login():
@@ -61,6 +70,13 @@ def login():
         return jsonify(user.json())
     else:
         return sendError(401, "Login Failed")
+
+# ----------------------------------------------------------------------------
+
+@app.route("/user/<int:id>", methods=['GET'])
+@login_required
+def user(id):
+    return "{}"
 
 # TODO add user exists check!!!
 @app.route("/register", methods=["GET","POST"])

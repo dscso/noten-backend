@@ -33,37 +33,14 @@ def generate_token(lenght=32, chars=string.ascii_letters + string.digits):
 
 def login_required(func):
     @wraps(func)
-    def decorated_view(*args, **kwargs):
-        uid = session.get('uid')
-        token = session.get('token')
-        if(uid != None and token != None):
-            if(verify_token(uid, token)):
+    def decorated(*args, **kwargs):
+        auth = request.headers["Authorization"].split(":")
+        if (len(auth) == 2):
+            if(verify_token(auth[0], auth[1])):
                 return func(*args, **kwargs)
-        # TODO redirect?
-        # return redirect(url_for("login"))
-        return main.sendError(401, "login requiered", "decorator")
-    return decorated_view
+        return main.sendError(401, "Not Authenticated")
+    return decorated
 
-
-def login_required1(f):
-    def decorator(f):
-        uid = session.get('uid')
-        token = session.get('token')
-        if(uid != None and token != None):
-            if(verify_token(uid, token)):
-                return f()
-        # TODO redirect?
-        # return redirect(url_for("login"))
-        return main.sendError(401, "login requiered", "decorator")
-    return decorator
-
-def decor(awd, xw):
-    def decorator(f):
-        print("a")
-        print(awd)
-        print(xw)
-        return f
-    return decorator
 
 def usertype_required(usertype):
     @wraps
