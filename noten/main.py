@@ -9,16 +9,15 @@ from flask_cors import CORS
 from time import time
 import datetime
 
-
-# import sys
-# print(sys.path)
-
 # initialize 'app' with Flask instance
 app = Flask(__name__)
+# Cross origin
 CORS(app)
+
+# secret key (currently not needet)
 f=open("secret.key", "r")
 app.secret_key = f.read()
-print(app.secret_key)
+
 #configure sqlalchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///../database.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -27,33 +26,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from models import *
-from auth import auth, login_required, usertype_required, decor
+from auth import auth, login_required, usertype_required
 
-# Hello.
-print("Mip.")
-
-# ROUTING
-
-@app.route("/css/<path:path>")
-def css(path):
-    return send_from_directory('templates/css', path)
-
-@app.route("/img/<path:path>")
-def img(path):
-    return send_from_directory("templates/img", path)
 
 @app.route("/")
 def index():
     return jsonify({
         "version":"v0.1"
     })
-
-@app.route("/me")
-@login_required
-def me():
-    #TODO load index file
-    return "index here"
-
 
 # ----------------------------  LOGIN  ---------------------------------------
 
@@ -71,7 +51,7 @@ def login():
     else:
         return sendError(401, "Login Failed")
 
-# ----------------------------------------------------------------------------
+# ----------------------- Get user data ---------------------------------------------
 
 @app.route("/user/<int:id>", methods=['GET'])
 @login_required
