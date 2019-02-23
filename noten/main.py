@@ -48,22 +48,19 @@ def index():
     #TODO load index file
     return "index here"
 
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/login", methods=['POST'])
 def login():
-    if(request.method == 'POST'):
-        # uid = request.args.get("uid")
-        # if(uid != None):
-        #     token = request.args.get("token")
-        #     if(token != None):
-        #         return verify_token(uid, token)  
-        # else:
-        mail = request.form.get("mail")
-        pwhash = request.form.get("password")
-        if(mail != None and pwhash != None):
-            return auth(mail, pwhash)
-        return sendError(400, "Bad request")
+    try:
+        param = request.get_json()
+        mail = param['mail']
+        password = param['password']
+        user = auth(mail, password)
+    except:
+         return sendError(400, "Bad request")
+    if (user != False):
+        return jsonify(user.json())
     else:
-        return sendError(405, "Method not allowed")
+        return sendError(401, "Login Failed")
 
 # TODO add user exists check!!!
 @app.route("/register", methods=["GET","POST"])
@@ -89,9 +86,13 @@ def ccp():
     return "skkrrr"
 
 def sendError(code, msg="", cause=""):
-    #print(code)#
     return jsonify({"error": code, "msg":msg}), code
-    #return render_template("error.html", code=code, cause=cause, msg=msg)
+
+def get(json, name):
+    try:
+        return json[name]
+    except:
+        return None
 
 # run the app
 if __name__ == '__main__':

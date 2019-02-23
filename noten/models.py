@@ -10,7 +10,7 @@ class User(db.Model):
     mail = db.Column(db.String(120), unique=True)
     name = db.Column(db.String)
     firstname = db.Column(db.String)
-    pwhash = db.Column(db.String)
+    password = db.Column(db.String)
     usertype = db.Column(db.Integer, default=0)
     token = db.relationship("Token", backref=db.backref(
         "users", uselist=False), lazy=True)

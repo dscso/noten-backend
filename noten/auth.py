@@ -11,10 +11,10 @@ db = main.db
 # matches login credentials with db - return status-string
 # TODO response error code with flask.Request
 
-def auth(mail, pwhash):
+def auth(mail, password):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
-        if(user.pwhash == pwhash):
+        if(user.password == password):
             token = user.token[0] if len(user.token) == 1 else None
             if(token != None):
                 token.token = generate_token()
@@ -22,19 +22,10 @@ def auth(mail, pwhash):
             else:
                 token = models.Token(uid=user.uid, token=generate_token())
                 db.session.add(token)
-            updateCookies(user, token)
             db.session.commit()
-            return jsonify(user.json())
-            #return redirect(url_for("index"), 302)
+            return user
     session.clear()
-    return main.sendError(401, "login failed", "auth.py#auth")
-
-# sets session cookies (Token-Auth)
-def updateCookies(user, token):
-    session['uid'] = user.uid
-    session['token'] = token.token
-    session['type_id'] = user.usertype
-    session['expiration'] = token.expiration
+    return False
 
 # generates a random auth token
 def generate_token(lenght=32, chars=string.ascii_letters + string.digits):
