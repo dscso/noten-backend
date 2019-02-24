@@ -52,18 +52,6 @@ def login():
     else:
         return sendError(401, "Login Failed")
 
-# -------------------------- check token ---------------------------------
-
-
-@app.route("/me", methods=['GET']) # check if token still is valid
-@login_required
-def me():
-    req = parseAuth(request.headers)
-
-    return jsonify({
-        'uid': req['uid'],
-    })
-
 
 # ----------------------- Get user data ------------------------------
 # ToDo: add admin check
@@ -78,12 +66,14 @@ def user(id):
         return sendError(404, "Bad Request")
     return jsonify(user.json())
 
+
+
 @app.route("/ccp")
 @usertype_required(2)
 def ccp():
     return "skkrrr"
 
-def sendError(code, msg="", cause=""):
+def sendError(code, msg=""):
     return jsonify({"error": code, "msg":msg}), code
 
 def get(json, name):
