@@ -34,13 +34,23 @@ def generate_token(lenght=32, chars=string.ascii_letters + string.digits):
 def login_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        auth = request.headers["Authorization"].split(":")
-        if (len(auth) == 2):
-            if(verify_token(auth[0], auth[1])):
-                return func(*args, **kwargs)
+        if(verify_token(parseAuth(request.headers))):
+            return func(*args, **kwargs)
         return main.sendError(401, "Not Authenticated")
     return decorated
 
+# parses the header and puts info into dict
+def parseAuth(headers):
+    try:
+        auth = request.headers['Authorization'].split(":")
+        if (len(auth) == 2):
+            return {
+                "uid": int(auth[0]),
+                "token": auth[1]
+            }
+    except:
+        pass
+    return {"uid": None, "token": None}
 
 def usertype_required(usertype):
     @wraps
@@ -57,12 +67,20 @@ def usertype_required(usertype):
         return main.sendError(401, "no perission", "usertype")
     return decorator
 
-def verify_token(uid, token):
-    user = models.User.query.filter_by(uid=uid).first()
+
+#*****************************************************************
+# --------------------------- Helper functions ------------------
+
+
+# checks token based on parseHeader dict
+def verify_token(auth): # {uid: 123, token: xyz}
+    if (auth['uid'] == None):
+        return False
+    user = models.User.query.filter_by(uid=auth['uid']).first()
     if(user != None):
         db_token = user.token[0] if len(user.token) == 1 else None
         if(db_token != None):
-            if(db_token.token == token):
+            if(db_token.token == auth['token']):
                 if(not db_token.is_expired()):
                     return True
     return False

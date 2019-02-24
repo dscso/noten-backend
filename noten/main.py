@@ -7,6 +7,7 @@ from flask import Flask, abort, redirect, render_template, request, url_for, jso
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from time import time
+import models
 import datetime
 
 # initialize 'app' with Flask instance
@@ -26,7 +27,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from models import *
-from auth import auth, login_required, usertype_required
+from auth import auth, login_required, usertype_required, parseAuth
 
 
 @app.route("/")
@@ -37,7 +38,7 @@ def index():
 
 # ----------------------------  LOGIN  ---------------------------------------
 
-@app.route("/login", methods=['POST'])
+@app.route("/login", methods=['POST']) # params: mail and password (generates token)
 def login():
     try:
         param = request.get_json()
@@ -45,36 +46,37 @@ def login():
         password = param['password']
         user = auth(mail, password)
     except:
-         return sendError(400, "Bad request")
+        return sendError(400, "Bad request")
     if (user != False):
         return jsonify(user.json())
     else:
         return sendError(401, "Login Failed")
 
-# ----------------------- Get user data ---------------------------------------------
+# -------------------------- check token ---------------------------------
 
-@app.route("/user/<int:id>", methods=['GET'])
+
+@app.route("/me", methods=['GET']) # check if token still is valid
+@login_required
+def me():
+    req = parseAuth(request.headers)
+
+    return jsonify({
+        'uid': req['uid'],
+    })
+
+
+# ----------------------- Get user data ------------------------------
+# ToDo: add admin check
+@app.route("/users/<int:id>", methods=['GET'])
 @login_required
 def user(id):
-    return "{}"
-
-# TODO add user exists check!!!
-@app.route("/register", methods=["GET","POST"])
-def register():
-    if(request.method == 'POST'):
-        mail = request.args.get("mail")
-        pwhash = request.args.get("hash")
-        name = request.args.get("name")
-        firstname = request.args.get("firstname")
-        if(mail != None and hash != None):
-            u = User(mail=mail, name=name, firstname=firstname, pwhash=pwhash)
-            db.session.add(u)
-            db.session.commit()
-            return "created"
-        else:
-            return sendError(400, "Bad request")
-    else:
-        return sendError(405, "Method not allowed")
+    req = parseAuth(request.headers)
+    if (req['uid'] != id):
+        return sendError(403, "Forbidden")
+    user = models.User.query.filter_by(uid=id).first()
+    if (user == None):
+        return sendError(404, "Bad Request")
+    return jsonify(user.json())
 
 @app.route("/ccp")
 @usertype_required(2)
