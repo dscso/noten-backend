@@ -1,4 +1,4 @@
-from flask import Flask, session, redirect, url_for, escape, request, jsonify, render_template
+from flask import Flask, session, redirect, url_for, escape, request, jsonify, render_template, g
 from functools import wraps
 import models
 import main
@@ -31,10 +31,12 @@ def auth(mail, password):
 def generate_token(lenght=32, chars=string.ascii_letters + string.digits):
     return ''.join(random.choice(chars) for _ in range(lenght))
 
+# Checks login and returns user object in g.user
 def login_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        if(verify_token(parseAuth(request.headers))):
+        g.user = verify_token(parseAuth(request.headers)) # http://flask.pocoo.org/docs/1.0/appcontext/
+        if(g.user != None):
             return func(*args, **kwargs)
         return main.sendError(401, "Not Authenticated")
     return decorated
@@ -82,5 +84,5 @@ def verify_token(auth): # {uid: 123, token: xyz}
         if(db_token != None):
             if(db_token.token == auth['token']):
                 if(not db_token.is_expired()):
-                    return True
-    return False
+                    return user
+    return None

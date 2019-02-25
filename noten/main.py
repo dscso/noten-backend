@@ -3,7 +3,7 @@ import inspect
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 # print(dir_path)
 
-from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory
+from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from time import time
@@ -48,25 +48,32 @@ def login():
     except:
         return sendError(400, "Bad request")
     if (user != False):
-        return jsonify(user.json())
+        json = user.json()
+        json['token'] = user.getToken()
+        json['expiration'] = user.getExpiration()
+        return jsonify(json)
     else:
         return sendError(401, "Login Failed")
 
 
+
+# TODO: add POST Methode
+@app.route("/profile", methods=['GET']) 
+@login_required
+def profile():
+    return jsonify(g.user.json())
+
 # ----------------------- Get user data ------------------------------
-# ToDo: add admin check
+
 @app.route("/users/<int:id>", methods=['GET'])
 @login_required
 def user(id):
-    req = parseAuth(request.headers)
-    if (req['uid'] != id):
+    if (g.user['uid'] != id):
         return sendError(403, "Forbidden")
     user = models.User.query.filter_by(uid=id).first()
     if (user == None):
         return sendError(404, "Bad Request")
     return jsonify(user.json())
-
-
 
 @app.route("/ccp")
 @usertype_required(2)

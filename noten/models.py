@@ -16,17 +16,18 @@ class User(db.Model):
         "users", uselist=False), lazy=True)
 
     def json(self):
-        token = self.token[0]
-        # TODO: modify timestamp?
         return {
-            "expiration": str(token.expiration.timestamp() * 1000), 
-            "token": str(token.token), 
             "type": self.usertype, 
             "uid": self.uid,
             "firstname": self.firstname,
             "surname": self.name
         }
-
+    def getToken(self):
+        return str(self.token[0].token)
+    
+    def getExpiration(self):  # TODO: modify timestamp?
+        return str(self.token[0].expiration.timestamp() * 1000)
+    
     def is_teacher(self):
         return self.usertype
 
