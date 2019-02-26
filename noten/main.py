@@ -63,6 +63,12 @@ def login():
 def profile():
     return jsonify(g.user.json())
 
+@app.route("/teachers/<int:id>/courses")
+@login_required
+def getcourses(id):
+    return "Yaaayyy" + str(id)
+
+
 # ----------------------- Get user data ------------------------------
 
 @app.route("/users/<int:id>", methods=['GET'])

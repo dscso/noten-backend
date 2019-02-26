@@ -77,7 +77,7 @@ def usertype_required(usertype):
 # checks token based on parseHeader dict
 def verify_token(auth): # {uid: 123, token: xyz}
     if (auth['uid'] == None):
-        return False
+        return None
     user = models.User.query.filter_by(uid=auth['uid']).first()
     if(user != None):
         db_token = user.token[0] if len(user.token) == 1 else None
