@@ -61,21 +61,22 @@ class Subject(db.Model):
 class Course(db.Model):
     __tablename__ = "courses"
     cid = db.Column(db.Integer, primary_key=True)
-    classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
-    subid = db.Column(db.Integer, db.ForeignKey("subjects.subid"))
+    classid = db.Column(db.Integer, db.ForeignKey("classes.classid")) # welche klasse 10a 10b oder 11/12
+    subid = db.Column(db.Integer, db.ForeignKey("subjects.subid")) 
     teacherid = db.Column(db.Integer, db.ForeignKey("users.uid"))
     ctype = db.Column(db.Integer) # 0 = sek1 fach; 1 = sek2 gk; 2 = sek2 lk;
     # relations
     teacher = db.relationship("User", backref=db.backref(__tablename__), lazy=True)
-    clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True) # welche klasse 10a 10b oder 11/12
+    clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
     subject = db.relationship("Subject", backref=db.backref(__tablename__), lazy=True)
-
+ 
 # 10a 10b etc
 class Class(db.Model):
     __tablename__ = "classes"
     classid = db.Column(db.Integer, primary_key=True)
     grade = db.Column(db.Integer)
     label = db.Column(db.String)
+    # wichtig! Gucken ob die Klasse auch wirklich eine SEK I Klasse ist
     #teacher = db.relationship("Teacher", backref=db.backref("class"), lazy=True)
 
 class MarkMeta(db.Model):
