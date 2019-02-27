@@ -1,5 +1,6 @@
 from main import db
-from models import Subject, Class, Course
+from models import Subject, Class, Course, User
+
 
 def update_sub(subid, subname, short):
     sub = Subject.query.filter_by(subid=subid).first()
@@ -21,10 +22,21 @@ def update_course(cid, classid, subjectid, ctype):
     course = Course.query.filter_by(cid=cid).first()
     if(course != None):
         course.classid = classid
-        course.subjectid = subjectid
+        course.subid = subjectid
         course.ctype = ctype
     else:
-        db.session.add(Course(cid=cid, classid=classid, subjectid=subjectid, ctype=ctype))
+        db.session.add(Course(cid=cid, classid=classid, subid=subjectid, ctype=ctype))
+
+def update_user(uid, mail, password, name="", firstname="", usertype=1):
+    u = User.query.filter_by(uid=uid).first()
+    if(u != None):
+        u.mail = mail
+        u.name = name
+        u.firstname = firstname
+        u.password = password
+        u.usertype = usertype
+    else:
+        db.session.add(User(uid=uid, name=name,firstname=firstname, password=password, usertype=usertype))
 
 def load_defaults():
 
@@ -67,5 +79,7 @@ def load_defaults():
     update_course(1, 4, 4, 2)
     update_course(2, 1, 24, 0)
     update_course(3, 2, 22, 0)
+
+    update_user(1, "l.lehrer@plg-berlin.de", "kek", "Schulz", "Jürgen", 3)
 
     db.session.commit()

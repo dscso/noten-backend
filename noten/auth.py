@@ -66,7 +66,7 @@ def usertype_required(usertype):
                     return f
         # TODO redirect?
         # return redirect(url_for("login"))
-        return main.sendError(401, "no perission", "usertype")
+        return main.sendError(401, "no perission")
     return decorator
 
 

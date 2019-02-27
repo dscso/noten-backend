@@ -1,6 +1,8 @@
 import main
 from datetime import datetime
 from time import time
+from flask import jsonify
+import json
 db = main.db
 
 # User Model (Database)
@@ -69,7 +71,16 @@ class Course(db.Model):
     teacher = db.relationship("User", backref=db.backref(__tablename__), lazy=True)
     clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
     subject = db.relationship("Subject", backref=db.backref(__tablename__), lazy=True)
- 
+    
+    def __repr__(self):
+        return json.dumps({
+            "cid":self.cid,
+            "classid":self.classid,
+            "subid":self.subid,
+            "teacherid":self.teacherid,
+            "ctype":self.ctype
+        })
+
 # 10a 10b etc
 class Class(db.Model):
     __tablename__ = "classes"
@@ -93,5 +104,5 @@ class S2Mark(db.Model):
     nid = db.Column(db.Integer, primary_key=True)
 
 db.create_all()
-"""import defaults
-defaults.load_defaults()"""
+import defaults
+defaults.load_defaults()

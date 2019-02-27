@@ -63,10 +63,11 @@ def login():
 def profile():
     return jsonify(g.user.json())
 
+import json
 @app.route("/teachers/<int:id>/courses")
-@login_required
+#@login_required
 def getcourses(id):
-    return "Yaaayyy" + str(id)
+    return str(Course.query.filter_by(teacherid=id).all())
 
 
 # ----------------------- Get user data ------------------------------
@@ -97,4 +98,4 @@ def get(json, name):
 
 # run the app
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=3000)
