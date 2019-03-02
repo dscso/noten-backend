@@ -1,6 +1,9 @@
 from main import db
-from models import Subject, Class, Course, User
+from models import student_to_course, Subject, Class, Course, User, Student, Teacher
 
+def addStudentToCourse(uid, cid):
+    s = Student.query.filter_by(uid=uid).first()
+    s.courses.append(Course.query.filter_by(cid=cid).first())
 
 def update_sub(subid, subname, short):
     sub = Subject.query.filter_by(subid=subid).first()
@@ -10,33 +13,54 @@ def update_sub(subid, subname, short):
     else:
         db.session.add(Subject(subid=subid, subname=subname, short=short))
 
-def update_class(classid, grade, label):
+def update_student(uid, mail, password, name, firstname, classid):
+    s = Student.query.filter_by(uid=uid).first()
+    if(s != None):
+        s.mail = mail
+        s.name = name
+        s.firstname = firstname
+        s.password = password
+        s.usertype = 1
+        s.classid = classid
+    else:
+        db.session.add(Student(uid=uid, name=name,firstname=firstname, password=password, usertype=1))
+
+def update_teacher(uid, mail, password, name, firstname):
+    t = Teacher.query.filter_by(uid=uid).first()
+    if(t != None):
+        t.mail = mail
+        t.name = name
+        t.firstname = firstname
+        t.password = password
+        t.usertype = 3
+    else:
+        db.session.add(Teacher(uid=uid, name=name, firstname=firstname, password=password, usertype=3))
+
+
+def update_class(classid, teacherid, grade, label):
     clazz = Class.query.filter_by(classid=classid).first()
     if(clazz != None):
+        clazz.teacherid = teacherid
         clazz.grade = grade
         clazz.label = label
+        clazz.is_grouped = getGroupState(grade)
     else:
-        db.session.add(Class(classid=classid, grade=grade, label=label))
+        db.session.add(Class(classid=classid, teacherid=teacherid, grade=grade, label=label, is_grouped=getGroupState(grade)))
 
-def update_course(cid, classid, subjectid, ctype):
+def getGroupState(grade):
+    if(grade < 11):
+        return True
+    return False
+
+def update_course(cid, classid, subjectid, teacherid, ctype):
     course = Course.query.filter_by(cid=cid).first()
     if(course != None):
         course.classid = classid
         course.subid = subjectid
+        course.teacherid = teacherid
         course.ctype = ctype
     else:
         db.session.add(Course(cid=cid, classid=classid, subid=subjectid, ctype=ctype))
-
-def update_user(uid, mail, password, name="", firstname="", usertype=1):
-    u = User.query.filter_by(uid=uid).first()
-    if(u != None):
-        u.mail = mail
-        u.name = name
-        u.firstname = firstname
-        u.password = password
-        u.usertype = usertype
-    else:
-        db.session.add(User(uid=uid, name=name,firstname=firstname, password=password, usertype=usertype))
 
 def load_defaults():
 
@@ -71,15 +95,25 @@ def load_defaults():
 
     update_sub(subid=25, subname="Beruf und Studium", short="bs")
 
-    update_class(classid=1, grade=7, label="D")
-    update_class(classid=2, grade=10, label="A")
-    update_class(classid=3, grade=11, label="")
-    update_class(classid=4, grade=12, label="")
+    update_class(classid=1, teacherid=1, grade=7, label="D")
+    update_class(classid=2, teacherid=1, grade=10, label="A")
+    update_class(classid=3, teacherid=2, grade=11, label="")
+    update_class(classid=4, teacherid=2, grade=12, label="")
 
-    update_course(1, 4, 4, 2)
-    update_course(2, 1, 24, 0)
-    update_course(3, 2, 22, 0)
+    update_course(cid=1, classid=4, subjectid=8, teacherid=2, ctype=3)
+    update_course(cid=2, classid=4, subjectid=5, teacherid=1, ctype=3)
+    update_course(cid=3, classid=4, subjectid=1, teacherid=2, ctype=3)
 
-    update_user(1, "l.lehrer@plg-berlin.de", "kek", "Schulz", "Jürgen", 3)
+    update_teacher(1, "jürgen", "kek", "Schulz", "Jürgen")
+    update_teacher(2, "rainer", "sip", "Wahnsinn", "Rainer")
+
+    update_student(3, "hugh", "meme", "Mungus", "Hugh", 4)
+    update_student(4, "big", "meme", "Chungus", "Big", 4)
+
+    addStudentToCourse(3, 1)
+    addStudentToCourse(3, 2)
+
+    addStudentToCourse(4, 1)
+    addStudentToCourse(4, 3)
 
     db.session.commit()

@@ -27,7 +27,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from models import *
-from auth import auth, login_required, usertype_required, parseAuth
+from auth import auth, login_required, parseAuth, admin
 
 
 @app.route("/")
@@ -66,9 +66,17 @@ def profile():
 import json
 @app.route("/teachers/<int:id>/courses")
 #@login_required
-def getcourses(id):
-    return str(Course.query.filter_by(teacherid=id).all())
+def getTeacherCourses(id):
+    return jsonify([e.serialize() for e in Course.query.filter_by(teacherid=id).all()])
+#    return (str(Course.query.filter_by(teacherid=id).all()))
 
+@app.route("/students/<int:id>/courses")
+#@login_required
+def getStudentCourses(id):
+    s = Student.query.filter_by(uid=id).first()
+    if(s != None):
+        return s.getCourses()
+    return sendError(404, "Not Found")
 
 # ----------------------- Get user data ------------------------------
 
@@ -83,7 +91,7 @@ def user(id):
     return jsonify(user.json())
 
 @app.route("/ccp")
-@usertype_required(2)
+@admin
 def ccp():
     return "skkrrr"
 
@@ -98,4 +106,4 @@ def get(json, name):
 
 # run the app
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=5000)

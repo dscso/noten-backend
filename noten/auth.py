@@ -18,7 +18,7 @@ def auth(mail, password):
             token = user.token[0] if len(user.token) == 1 else None
             if(token != None):
                 token.token = generate_token()
-                token.update_expiration()
+                token.updateExpiration()
             else:
                 token = models.Token(uid=user.uid, token=generate_token())
                 db.session.add(token)
@@ -28,8 +28,9 @@ def auth(mail, password):
     return False
 
 # generates a random auth token
-def generate_token(lenght=32, chars=string.ascii_letters + string.digits):
-    return ''.join(random.choice(chars) for _ in range(lenght))
+def generate_token():
+    from time import time
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(128))
 
 # Checks login and returns user object in g.user
 def login_required(func):
@@ -54,15 +55,15 @@ def parseAuth(headers):
         pass
     return {"uid": None, "token": None}
 
-def usertype_required(usertype):
-    @wraps
-    def decorator(f):
+def admin(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
         uid = session.get('uid')
         if(uid != None):
             user = models.User.query.filter_by(uid=uid).first()
             db_type = user.usertype if user != None else None
             if(user != None and db_type != None):
-                if(db_type == usertype):
+                if(db_type == 4):
                     return f
         # TODO redirect?
         # return redirect(url_for("login"))
@@ -86,3 +87,5 @@ def verify_token(auth): # {uid: 123, token: xyz}
                 if(not db_token.is_expired()):
                     return user
     return None
+
+generate_token()
