@@ -42,15 +42,17 @@ def index():
 def login():
     try:
         param = request.get_json()
-        mail = param['mail']
-        password = param['password']
-        user = auth(mail, password)
+        mail = param.get('mail')
+        password = param.get('password')
+        if(mail != None and password != None):
+            user = auth(mail, password)
     except:
         return sendError(400, "Bad request")
     if (user != False):
         json = user.json()
         json['token'] = user.getToken()
         json['expiration'] = user.getExpiration()
+        print(json)
         return jsonify(json)
     else:
         return sendError(401, "Login Failed")
