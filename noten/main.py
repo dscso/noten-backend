@@ -78,6 +78,13 @@ def getStudentCourses(id):
         return s.getCourses()
     return sendError(404, "Not Found")
 
+@app.route("/classes/<int:id>/students")
+def getClassStudents(id):
+    c = Class.query.filter_by(classid=id).first()
+    if(c != None):
+        return c.getStudents()
+    return sendError(404, "Not Found")
+
 # ----------------------- Get user data ------------------------------
 
 @app.route("/users/<int:id>", methods=['GET'])

@@ -10,6 +10,11 @@ student_to_course = db.Table('student_to_course',
     db.Column('cid', db.Integer, db.ForeignKey('courses.cid'))
 )
 
+student_to_class = db.Table('student_to_class',
+    db.Column('uid', db.Integer, db.ForeignKey('students.uid')),
+    db.Column('classid', db.Integer, db.ForeignKey('classes.classid'))
+)
+
 
 # User Model (Database)
 class User(db.Model):
@@ -51,8 +56,18 @@ class Student(User):
     uid = db.Column(db.Integer, db.ForeignKey('users.uid'), primary_key=True)
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
 
-    clazz = db.relationship("Class", backref=db.backref(__tablename__))
+    #clazz = db.relationship("Class", backref=db.backref(__tablename__))
     courses = db.relationship("Course", secondary=student_to_course)
+
+    def serialize(self):
+        return {
+            "uid":self.uid,
+            "name":self.name,
+            "firstname":self.firstname,
+            "mail":self.mail,
+            "classid":self.classid,
+            "courses":[e.serialize() for e in self.courses]
+        }
     
     def getGrade(self):
         return self.clazz.grade
@@ -95,7 +110,7 @@ class Course(db.Model):
     __tablename__ = "courses"
     cid = db.Column(db.Integer, primary_key=True)
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid")) # welche klasse 10a 10b oder 11/12
-    subid = db.Column(db.Integer, db.ForeignKey("subjects.subid")) 
+    subid = db.Column(db.Integer, db.ForeignKey("subjects.subid"))
     teacherid = db.Column(db.Integer, db.ForeignKey("teachers.uid"))
     ctype = db.Column(db.Integer) # 1 = SekI-Normal; 2 = SekI-WPU; 3 = SekII-GK; 4 = SekII-LK
     # 
@@ -123,7 +138,12 @@ class Class(db.Model):
     label = db.Column(db.String) # A,B,C... oder ''
     is_grouped = db.Column(db.Boolean) # True für Sek I; False für Sek II (Tutorium)
     # wichtig! Gucken ob die Klasse auch wirklich eine SEK I Klasse ist
+    
     teacher = db.relationship("Teacher", backref=db.backref(__tablename__), lazy=True)
+    students = db.relationship("Student", backref=db.backref(__tablename__), lazy=False)
+
+    def getStudents(self):
+        return jsonify([e.serialize() for e in self.students])
 
 class MarkMeta(db.Model):
     __tablename__ = "meta"
@@ -140,5 +160,6 @@ class S2Mark(db.Model):
 
 db.create_all()
 db.session.commit()
+
 import defaults
 defaults.load_defaults()

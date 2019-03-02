@@ -104,11 +104,11 @@ def load_defaults():
     update_course(cid=2, classid=4, subjectid=5, teacherid=1, ctype=3)
     update_course(cid=3, classid=4, subjectid=1, teacherid=2, ctype=3)
 
-    update_teacher(1, "jürgen", "kek", "Schulz", "Jürgen")
-    update_teacher(2, "rainer", "sip", "Wahnsinn", "Rainer")
+    update_teacher(1, "jurgen@plg", "kek", "Schulz", "Jürgen")
+    update_teacher(2, "rainer@plg", "sip", "Wahnsinn", "Rainer")
 
-    update_student(3, "hugh", "meme", "Mungus", "Hugh", 4)
-    update_student(4, "big", "meme", "Chungus", "Big", 4)
+    update_student(3, "hugh@plg", "meme", "Mungus", "Hugh", 4)
+    update_student(4, "big@plg", "meme", "Chungus", "Big", 4)
 
     addStudentToCourse(3, 1)
     addStudentToCourse(3, 2)
