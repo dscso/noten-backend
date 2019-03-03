@@ -65,11 +65,21 @@ def login():
 def profile():
     return jsonify(g.user.json())
 
-import json
+@app.route("/courses/<int:id>/students")
+#@login_required
+def getCourseStudents(id):
+    c = Course.query.filter_by(cid=id).first()
+    if(c != None):
+        return c.getStudents()
+    return sendError(404, "Not Found")
+
 @app.route("/teachers/<int:id>/courses")
 #@login_required
 def getTeacherCourses(id):
-    return jsonify([e.serialize() for e in Course.query.filter_by(teacherid=id).all()])
+    t = Teacher.query.filter_by(uid=id).first()
+    if(t != None):
+        return t.getCourses()
+    return sendError(404, "Not Found")
 #    return (str(Course.query.filter_by(teacherid=id).all()))
 
 @app.route("/students/<int:id>/courses")
@@ -115,4 +125,4 @@ def get(json, name):
 
 # run the app
 if __name__ == '__main__':
-    app.run(debug=True, host= '0.0.0.0', port=5000) # host argument ensures flask is reachable in the network
+    app.run(debug=True, host= '0.0.0.0', port=5000) # host argument runs flask on the local ip so it's visible in the network

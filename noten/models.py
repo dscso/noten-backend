@@ -25,7 +25,7 @@ class User(db.Model):
     firstname = db.Column(db.String)
     password = db.Column(db.String)
     usertype = db.Column(db.Integer, default=0)
-    token = db.relationship("Token", backref=db.backref("users", uselist=False), lazy=True)
+    token = db.relationship("Token", backref=db.backref("users"), lazy=True)
 
     def json(self):
         return {
@@ -57,7 +57,7 @@ class Student(User):
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
 
     #clazz = db.relationship("Class", backref=db.backref(__tablename__))
-    courses = db.relationship("Course", secondary=student_to_course)
+    courses = db.relationship("Course", secondary=student_to_course, back_populates=__tablename__)
 
     def serialize(self):
         return {
@@ -78,15 +78,18 @@ class Student(User):
 
 class Teacher(User):
     __tablename__ = "teachers"
-    __mapper_args__ = {'polymorphic_identity': 'teachers'} # sqlalchemy sql-mapper settings
+    __mapper_args__ = {'polymorphic_identity': 'teachers'} # sqlalchemy-mapper settings
     uid = db.Column(db.Integer, db.ForeignKey('users.uid'), primary_key=True)
+    courses = db.relationship("Course", backref=db.backref(__tablename__))
     # ...
+    def getCourses(self):
+        return jsonify([e.serialize() for e in self.courses])
 
 # Token Model (Database)
 class Token(db.Model):
     __tablename__ = 'tokens'
     uid = db.Column(db.Integer, db.ForeignKey("users.uid"), primary_key=True)
-    token = db.Column(db.String(32))
+    token = db.Column(db.String(128))
     expiration = db.Column(db.DateTime, default=datetime.fromtimestamp(time() + 900))
 
     # returns True if token is expired
@@ -115,9 +118,21 @@ class Course(db.Model):
     ctype = db.Column(db.Integer) # 1 = SekI-Normal; 2 = SekI-WPU; 3 = SekII-GK; 4 = SekII-LK
     # 
     # relations
-    teacher = db.relationship("Teacher", backref=db.backref(__tablename__), lazy=True)
+    teacher = db.relationship("Teacher") # ,backref=db.backref(__tablename__), lazy=True
     clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
     subject = db.relationship("Subject", backref=db.backref(__tablename__), lazy=True)
+    students = db.relationship("Student", secondary=student_to_course, back_populates=__tablename__, lazy=True)
+
+    def getStudents(self):
+        if(self.ctype == 1):
+            return self.clazz.getStudents()
+        elif(self.ctype == 2):
+            # WPU
+            pass
+        elif(self.ctype >= 3):
+            s = []
+            return jsonify([e.serialize() for e in self.students])
+
     
     def serialize(self):
         return {
