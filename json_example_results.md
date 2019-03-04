@@ -138,3 +138,66 @@
   }
 ]
 ```
+# Course
+## Get all Students in a Course
+```
+/courses/<id>/students
+```
+```json
+[
+  {
+    "classid": 4, 
+    "courses": [
+      {
+        "cid": 1, 
+        "classid": 4, 
+        "ctype": 3, 
+        "short": "de", 
+        "subid": 8, 
+        "subject": "Deutsch", 
+        "teacherid": 2
+      }, 
+      {
+        "cid": 2, 
+        "classid": 4, 
+        "ctype": 3, 
+        "short": "ma", 
+        "subid": 5, 
+        "subject": "Mathematik", 
+        "teacherid": 1
+      }
+    ], 
+    "firstname": "Hugh", 
+    "mail": "hugh@plg", 
+    "name": "Mungus", 
+    "uid": 3
+  }, 
+  {
+    "classid": 4, 
+    "courses": [
+      {
+        "cid": 1, 
+        "classid": 4, 
+        "ctype": 3, 
+        "short": "de", 
+        "subid": 8, 
+        "subject": "Deutsch", 
+        "teacherid": 2
+      }, 
+      {
+        "cid": 3, 
+        "classid": 4, 
+        "ctype": 3, 
+        "short": "bio", 
+        "subid": 1, 
+        "subject": "Biologie", 
+        "teacherid": 2
+      }
+    ], 
+    "firstname": "Big", 
+    "mail": "big@plg", 
+    "name": "Chungus", 
+    "uid": 4
+  }
+]
+```

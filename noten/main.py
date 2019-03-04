@@ -1,21 +1,19 @@
 import os
 import inspect
-# dir_path = os.path.dirname(os.path.realpath(__file__))
-# print(dir_path)
 
 from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS # cross-origin support
 from time import time
 import models
 import datetime
 
 # initialize 'app' with Flask instance
 app = Flask(__name__)
-# Cross origin
+# cross origin
 CORS(app)
 
-# secret key (currently not needet)
+# secret key to encrypt session - obsolet due to changed authentication
 f=open("secret.key", "r")
 app.secret_key = f.read()
 
@@ -29,15 +27,14 @@ db = SQLAlchemy(app)
 from models import *
 from auth import auth, login_required, parseAuth, admin
 
-
+# index - actually obsolet, used for version now
 @app.route("/")
 def index():
     return jsonify({
         "version":"v0.1"
     })
 
-# ----------------------------  LOGIN  ---------------------------------------
-
+# login
 @app.route("/login", methods=['POST']) # params: mail and password (generates token)
 def login():
     try:
@@ -52,19 +49,19 @@ def login():
         json = user.json()
         json['token'] = user.getToken()
         json['expiration'] = user.getExpiration()
-        print(json)
         return jsonify(json)
     else:
         return sendError(401, "Login Failed")
 
-
-
-# TODO: add POST Methode
+# profile
+# TODO Post Method?
 @app.route("/profile", methods=['GET']) 
 @login_required
 def profile():
     return jsonify(g.user.json())
 
+# courses
+# course-students
 @app.route("/courses/<int:id>/students")
 #@login_required
 def getCourseStudents(id):
@@ -73,6 +70,8 @@ def getCourseStudents(id):
         return c.getStudents()
     return sendError(404, "Not Found")
 
+# teachers
+# teacher-courses
 @app.route("/teachers/<int:id>/courses")
 #@login_required
 def getTeacherCourses(id):
@@ -80,8 +79,9 @@ def getTeacherCourses(id):
     if(t != None):
         return t.getCourses()
     return sendError(404, "Not Found")
-#    return (str(Course.query.filter_by(teacherid=id).all()))
 
+# students
+# student-courses
 @app.route("/students/<int:id>/courses")
 #@login_required
 def getStudentCourses(id):
@@ -90,6 +90,8 @@ def getStudentCourses(id):
         return s.getCourses()
     return sendError(404, "Not Found")
 
+# classes
+# class-students
 @app.route("/classes/<int:id>/students")
 def getClassStudents(id):
     c = Class.query.filter_by(classid=id).first()
@@ -97,8 +99,7 @@ def getClassStudents(id):
         return c.getStudents()
     return sendError(404, "Not Found")
 
-# ----------------------- Get user data ------------------------------
-
+# users
 @app.route("/users/<int:id>", methods=['GET'])
 @login_required
 def user(id):
@@ -109,19 +110,14 @@ def user(id):
         return sendError(404, "Bad Request")
     return jsonify(user.json())
 
-@app.route("/ccp")
+# admin control panel
+@app.route("/acp")
 @admin
 def ccp():
-    return "skkrrr"
+    return "\"I can hit every software deadline given enough time.\""
 
 def sendError(code, msg=""):
     return jsonify({"error": code, "msg":msg}), code
-
-def get(json, name):
-    try:
-        return json[name]
-    except:
-        return None
 
 # run the app
 if __name__ == '__main__':

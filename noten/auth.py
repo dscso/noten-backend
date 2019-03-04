@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request, jsonify, render_template, g
-from functools import wraps
+from functools import wraps # used for decorators
 import models
 import main
 import random
@@ -8,9 +8,7 @@ import inspect
 
 db = main.db
 
-# matches login credentials with db - return status-string
-# TODO response error code with flask.Request
-
+# matches login credentials with db - returns user as json or False
 def auth(mail, password):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
@@ -46,6 +44,7 @@ def login_required(func):
 def parseAuth(headers):
     try:
         auth = request.headers['Authorization'].split(":")
+        print(request.headers['Authorization'])
         if (len(auth) == 2):
             return {
                 "uid": int(auth[0]),
@@ -55,25 +54,23 @@ def parseAuth(headers):
         pass
     return {"uid": None, "token": None}
 
+# decorator to grant only admins access
 def admin(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        uid = session.get('uid')
-        if(uid != None):
-            user = models.User.query.filter_by(uid=uid).first()
-            db_type = user.usertype if user != None else None
-            if(user != None and db_type != None):
-                if(db_type == 4):
-                    return f
+        auth = request.headers.get('Authorization').split(":")
+        if (len(auth) == 2):
+            uid = auth[0]
+            if(uid != None):
+                user = models.User.query.filter_by(uid=uid).first()
+                db_type = user.usertype if user != None else None
+                if(db_type != None):
+                    if(db_type == 4):
+                        return f(*args, **kwargs)
         # TODO redirect?
         # return redirect(url_for("login"))
         return main.sendError(401, "no perission")
     return decorator
-
-
-#*****************************************************************
-# --------------------------- Helper functions ------------------
-
 
 # checks token based on parseHeader dict
 def verify_token(auth): # {uid: 123, token: xyz}
@@ -84,8 +81,6 @@ def verify_token(auth): # {uid: 123, token: xyz}
         db_token = user.token[0] if len(user.token) == 1 else None
         if(db_token != None):
             if(db_token.token == auth['token']):
-                if(not db_token.is_expired()):
+                if(not db_token.isExpired()):
                     return user
     return None
-
-generate_token()
