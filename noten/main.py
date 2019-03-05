@@ -63,7 +63,7 @@ def profile():
 # courses
 # course-students
 @app.route("/courses/<int:id>/students")
-#@login_required
+@login_required
 def getCourseStudents(id):
     c = Course.query.filter_by(cid=id).first()
     if(c != None):
@@ -73,7 +73,7 @@ def getCourseStudents(id):
 # teachers
 # teacher-courses
 @app.route("/teachers/<int:id>/courses")
-#@login_required
+@login_required
 def getTeacherCourses(id):
     t = Teacher.query.filter_by(uid=id).first()
     if(t != None):
@@ -83,7 +83,7 @@ def getTeacherCourses(id):
 # students
 # student-courses
 @app.route("/students/<int:id>/courses")
-#@login_required
+@login_required
 def getStudentCourses(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):

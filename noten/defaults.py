@@ -45,7 +45,7 @@ def update_class(classid, teacherid, grade, label):
         clazz.label = label
         clazz.is_grouped = getGroupState(grade)
     else:
-        db.session.add(Class(classid=classid, teacherid=teacherid, grade=grade, label=label, is_grouped=getGroupState(grade)))
+        db.session.add(Class(classid=classid, teacherid=teacherid, grade=grade, label=label))
 
 def getGroupState(grade):
     if(grade < 11):
@@ -83,17 +83,18 @@ def load_defaults():
     update_sub(subid=14, subname="Ethik", short="eth")
     update_sub(subid=15, subname="Geografie", short="geo")
     update_sub(subid=16, subname="Geschichte", short="ge")
-    update_sub(subid=17, subname="Philosophie", short="phil")
-    update_sub(subid=18, subname="Politikwissenschaften", short="pw")
-    update_sub(subid=19, subname="Religion", short="rel")
-    update_sub(subid=20, subname="Sozialwissenschaften", short="sowi")
+    update_sub(subid=17, subname="Gesellschaftswissenschaften", short="gewi")
+    update_sub(subid=18, subname="Philosophie", short="phil")
+    update_sub(subid=19, subname="Politikwissenschaften", short="pw")
+    update_sub(subid=20, subname="Religion", short="rel")
+    update_sub(subid=21, subname="Sozialwissenschaften", short="sowi")
 
-    update_sub(subid=21, subname="Darstellendes Spiel", short="ds")
-    update_sub(subid=22, subname="Musik", short="mu")
-    update_sub(subid=23, subname="Musik Zusatz", short="muz")
-    update_sub(subid=24, subname="Kunst", short="ku")
+    update_sub(subid=22, subname="Darstellendes Spiel", short="ds")
+    update_sub(subid=23, subname="Musik", short="mu")
+    update_sub(subid=24, subname="Musik Zusatz", short="muz")
+    update_sub(subid=25, subname="Kunst", short="ku")
 
-    update_sub(subid=25, subname="Beruf und Studium", short="bs")
+    update_sub(subid=26, subname="Beruf und Studium", short="bs")
 
     update_class(classid=1, teacherid=1, grade=7, label="D")
     update_class(classid=2, teacherid=1, grade=10, label="A")
