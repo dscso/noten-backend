@@ -40,20 +40,6 @@ def login_required(func):
         return main.sendError(401, "Not Authenticated")
     return decorated
 
-# parses the header and puts info into dict
-def parseAuth(headers):
-    try:
-        auth = request.headers['Authorization'].split(":")
-        print(request.headers['Authorization'])
-        if (len(auth) == 2):
-            return {
-                "uid": int(auth[0]),
-                "token": auth[1]
-            }
-    except:
-        pass
-    return {"uid": None, "token": None}
-
 # decorator to grant only admins access
 def admin(f):
     @wraps(f)
@@ -83,4 +69,27 @@ def verify_token(auth): # {uid: 123, token: xyz}
             if(db_token.token == auth['token']):
                 if(not db_token.isExpired()):
                     return user
+                else:
+                    print(1)
+            else:
+                print(2)
+        else:
+            print(3)
+    else:
+        print(4)
     return None
+
+# parses the header and puts info into dict
+def parseAuth(headers):
+    try:
+        auth = request.headers['Authorization'].split(" ")
+        print(auth)
+        # print(request.headers['Authorization'])
+        if (len(auth) == 2):
+            return {
+                "token": auth[1],
+                "uid": models.Token.query.filter_by(token=auth[1]).first().uid
+            }
+    except:
+        pass
+    return {"uid": None, "token": None}

@@ -114,7 +114,7 @@ def user(id):
 @app.route("/acp")
 @admin
 def ccp():
-    return "\"I can hit every software deadline given enough time.\""
+    return jsonify("\"I can hit every software deadline given enough time.\"")
 
 def sendError(code, msg=""):
     return jsonify({"error": code, "msg":msg}), code

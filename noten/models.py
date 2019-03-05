@@ -44,29 +44,21 @@ class User(db.Model):
     def isTeacher(self):
         return self.usertype
 
-    def getCourses(self):
-        if(self.isTeacher()):
-            return str(Course.query.filter_by(teacherid=self.uid).all())
-        elif(1):
-            pass
-
 class Student(User):
     __tablename__ = 'students'
     __mapper_args__ = {'polymorphic_identity': 'students'}
     uid = db.Column(db.Integer, db.ForeignKey('users.uid'), primary_key=True)
     classid = db.Column(db.Integer, db.ForeignKey("classes.classid"))
 
-    #clazz = db.relationship("Class", backref=db.backref(__tablename__))
+    clazz = db.relationship("Class", back_populates=__tablename__)
     courses = db.relationship("Course", secondary=student_to_course, back_populates=__tablename__)
 
     def serialize(self):
         return {
             "uid":self.uid,
-            "name":self.name,
+            "surname":self.name,
             "firstname":self.firstname,
-            "mail":self.mail,
             "classid":self.classid,
-            "courses":[e.serialize() for e in self.courses]
         }
     
     def getGrade(self):
@@ -81,7 +73,7 @@ class Teacher(User):
     __mapper_args__ = {'polymorphic_identity': 'teachers'} # sqlalchemy-mapper settings
     uid = db.Column(db.Integer, db.ForeignKey('users.uid'), primary_key=True)
     courses = db.relationship("Course", backref=db.backref(__tablename__))
-    # ...
+
     def getCourses(self):
         return jsonify([e.serialize() for e in self.courses])
 
@@ -116,7 +108,7 @@ class Course(db.Model):
     subid = db.Column(db.Integer, db.ForeignKey("subjects.subid"))
     teacherid = db.Column(db.Integer, db.ForeignKey("teachers.uid"))
     ctype = db.Column(db.Integer) # 1 = SekI-Normal; 2 = SekI-WPU; 3 = SekII-GK; 4 = SekII-LK
-    # 
+
     # relations
     teacher = db.relationship("Teacher") # ,backref=db.backref(__tablename__), lazy=True
     clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
@@ -126,11 +118,7 @@ class Course(db.Model):
     def getStudents(self):
         if(self.ctype == 1):
             return self.clazz.getStudents()
-        elif(self.ctype == 2):
-            # WPU
-            pass
-        elif(self.ctype >= 3):
-            s = []
+        elif(self.ctype >= 2): # 2:WPU, 3:GK, 4:LK
             return jsonify([e.serialize() for e in self.students])
 
     
@@ -151,7 +139,7 @@ class Class(db.Model):
     teacherid = db.Column(db.Integer, db.ForeignKey("teachers.uid"))
     grade = db.Column(db.Integer) # 7,8...10,11,12
     label = db.Column(db.String) # A,B,C... oder ''
-    is_grouped = db.Column(db.Boolean) # True für Sek I; False für Sek II (Tutorium)
+    # is_grouped = db.Column(db.Boolean) # True für Sek I; False für Sek II (Tutorium)
     # wichtig! Gucken ob die Klasse auch wirklich eine SEK I Klasse ist
     
     teacher = db.relationship("Teacher", backref=db.backref(__tablename__), lazy=True)
