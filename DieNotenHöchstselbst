@@ -1,0 +1,23 @@
+class MarkMeta(db.Model):
+    __tablename__ = "meta"
+    mid = db.Column(db.Integer, primary_key=True)
+    name=db.Column(db.String)
+    percentage=db.Column(db.Float)
+    cid=db.Column(db.Integer,db.ForeignKey("course.cid"))
+
+class S1Mark(db.Model):
+    __tablename__ = "marks_sek_I"
+    nid = db.Column(db.Integer, primary_key=True)
+    tid = db.Column(db.Integer,db.ForeignKey("teacher.tid"))
+    name=db.Column(db.String)
+    value=db.Column(db.Intege)
+    meta=db.Column(db.Integer,db.ForeignKey("meta.mid"))
+
+
+class S2Mark(db.Model):
+    __tablename__ = "points"
+    nid = db.Column(db.Integer, primary_key=True)
+    tid = db.Column(db.Integer,db.ForeignKey("teacher.tid"))
+    name=db.Column(db.String)
+    value=db.Column(db.Integer)
+    meta=db.Column(db.Integer,db.ForeignKey("meta.mid"))
