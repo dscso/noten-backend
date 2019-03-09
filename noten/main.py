@@ -1,6 +1,8 @@
 import os
 import inspect
 
+import traceback
+
 from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS # cross-origin support
@@ -39,11 +41,15 @@ def index():
 def login():
     try:
         param = request.get_json()
+        print(param)
         mail = param.get('mail')
+        print(mail)
         password = param.get('password')
+        print(password)
         if(mail != None and password != None):
             user = auth(mail, password)
     except:
+        print(traceback.format_exc())
         return sendError(400, "Bad request")
     if (user != False):
         json = user.json()
@@ -76,6 +82,7 @@ def getCourseStudents(id):
 @login_required
 def getTeacherCourses(id):
     t = Teacher.query.filter_by(uid=id).first()
+    print(type(t))
     if(t != None):
         return t.getCourses()
     return sendError(404, "Not Found")
@@ -87,6 +94,7 @@ def getTeacherCourses(id):
 def getStudentCourses(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
+        print(type(s))
         return s.getCourses()
     return sendError(404, "Not Found")
 

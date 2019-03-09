@@ -5,6 +5,7 @@ import main
 import random
 import string
 import inspect
+import hashlib
 
 db = main.db
 
@@ -12,7 +13,8 @@ db = main.db
 def auth(mail, password):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
-        if(user.password == password):
+        print(user.password, sha512(password))
+        if(user.password == sha512(password)):
             token = user.token[0] if len(user.token) == 1 else None
             if(token != None):
                 token.token = generate_token()
@@ -24,6 +26,10 @@ def auth(mail, password):
             return user
     session.clear()
     return False
+
+def sha512(string):
+    sha_signature = hashlib.sha512(string.encode()).hexdigest()
+    return sha_signature
 
 # generates a random auth token
 def generate_token():
@@ -40,21 +46,23 @@ def login_required(func):
         return main.sendError(401, "Not Authenticated")
     return decorated
 
-# decorator to grant only admins access
+# decorator to grant access only to admins
 def admin(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        auth = request.headers.get('Authorization').split(":")
-        if (len(auth) == 2):
-            uid = auth[0]
-            if(uid != None):
-                user = models.User.query.filter_by(uid=uid).first()
-                db_type = user.usertype if user != None else None
-                if(db_type != None):
-                    if(db_type == 4):
-                        return f(*args, **kwargs)
-        # TODO redirect?
-        # return redirect(url_for("login"))
+        try:
+            auth = request.headers.get('Authorization').split(" ")
+            if (len(auth) == 2):
+                t = models.Token.query.filter_by(token=auth[1]).first()
+                uid = t.uid if t != None else None
+                if(uid != None):
+                    user = models.User.query.filter_by(uid=uid).first()
+                    db_type = user.usertype if user != None else None
+                    if(db_type != None):
+                        if(db_type == 4):
+                            return f(*args, **kwargs)
+        except:
+            pass
         return main.sendError(401, "no perission")
     return decorator
 
@@ -69,27 +77,21 @@ def verify_token(auth): # {uid: 123, token: xyz}
             if(db_token.token == auth['token']):
                 if(not db_token.isExpired()):
                     return user
-                else:
-                    print(1)
-            else:
-                print(2)
-        else:
-            print(3)
-    else:
-        print(4)
     return None
 
 # parses the header and puts info into dict
 def parseAuth(headers):
     try:
-        auth = request.headers['Authorization'].split(" ")
-        print(auth)
-        # print(request.headers['Authorization'])
-        if (len(auth) == 2):
-            return {
-                "token": auth[1],
-                "uid": models.Token.query.filter_by(token=auth[1]).first().uid
-            }
+        if('Authorization' in request.headers):
+            auth = request.headers['Authorization'].split(" ")
+            if (len(auth) == 2):
+                t = models.Token.query.filter_by(token=auth[1]).first()
+                if(t != None):
+                    uid = t.uid
+                    return {
+                        "token": auth[1],
+                        "uid": uid
+                    }
     except:
         pass
     return {"uid": None, "token": None}

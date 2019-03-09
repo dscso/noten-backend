@@ -15,6 +15,10 @@ student_to_class = db.Table(
 
 # User Model (Database)
 class User(db.Model):
+    __mapper_args__ = {
+        'polymorphic_identity':'users',
+        'concrete': True
+    }
     __tablename__ = 'users'
     uid = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(120), unique=True)
@@ -41,7 +45,6 @@ class User(db.Model):
     def isTeacher(self):
         return self.usertype
 
-
 class Student(User):
     __tablename__ = 'students'
     __mapper_args__ = {'polymorphic_identity': 'students'}
@@ -67,12 +70,13 @@ class Student(User):
         # return jsonify([e.serialize() for e in student_to_course.query.filter_by(uid=self.uid).all()])
 
 
-class Teacher(User):
+class Teacher(User, db.Model):
     __tablename__ = "teachers"
     # sqlalchemy-mapper settings
-    __mapper_args__ = {'polymorphic_identity': 'teachers'}
+    # __mapper_args__ = {'polymorphic_identity': 'teachers'}
     uid = db.Column(db.Integer, db.ForeignKey('users.uid'), primary_key=True)
-    courses = db.relationship("Course", backref=db.backref(__tablename__))
+
+    courses = db.relationship("Course")
 
     def getCourses(self):
         return jsonify([e.serialize() for e in self.courses])
@@ -116,7 +120,7 @@ class Course(db.Model):
 
     # relations
     # ,backref=db.backref(__tablename__), lazy=True
-    teacher = db.relationship("Teacher")
+    teacher = db.relationship("Teacher", back_populates=__tablename__)
     clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
     subject = db.relationship("Subject", backref=db.backref(__tablename__), lazy=True)
     students = db.relationship("Student", secondary=student_to_course, back_populates=__tablename__, lazy=True)
@@ -145,6 +149,7 @@ class Class(db.Model):
     teacherid = db.Column(db.Integer, db.ForeignKey("teachers.uid"))
     grade = db.Column(db.Integer)  # 7,8...10,11,12
     label = db.Column(db.String)  # A,B,C... oder ''
+    name = db.column_property(str(grade) + label)
     # is_grouped = db.Column(db.Boolean) # True für Sek I; False für Sek II (Tutorium)
     # wichtig! Gucken ob die Klasse auch wirklich eine SEK I Klasse ist
 

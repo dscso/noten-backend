@@ -105,11 +105,11 @@ def load_defaults():
     update_course(cid=2, classid=4, subjectid=5, teacherid=1, ctype=3)
     update_course(cid=3, classid=4, subjectid=1, teacherid=2, ctype=3)
 
-    update_teacher(1, "jurgen@plg", "kek", "Schulz", "Jürgen")
-    update_teacher(2, "rainer@plg", "sip", "Wahnsinn", "Rainer")
+    update_teacher(1, "jurgen@plg", "6a1a778143e4672886991729035807cabeb75ad42a3fe4bf580cfbdf5cea7c476705d878af5f0fd0dc07d19f2959e224b21788e561f046177f6752b4bcc59e2c", "Schulz", "Jürgen")
+    update_teacher(2, "rainer@plg", "59a4515adec34b99e2d8a45364deadb378f01ff2ef5728b9a2c42cdac36f1af46f6d6e79a64648f64292a6be9b693b34e4b6b6b58eab649ddf402d6fc9a602a7", "Wahnsinn", "Rainer")
 
-    update_student(3, "hugh@plg", "meme", "Mungus", "Hugh", 4)
-    update_student(4, "big@plg", "meme", "Chungus", "Big", 4)
+    update_student(3, "hugh@plg", "a8d5562e2c8f95053bb410a1fe18f88859b7df4c82ca41b25c0bcb9508004181c243f0756ea860d6d957e397f2bedfcbddd396cb6c7c2a2b5b9c59cae02c80ce", "Mungus", "Hugh", 4)
+    update_student(4, "big@plg", "a8d5562e2c8f95053bb410a1fe18f88859b7df4c82ca41b25c0bcb9508004181c243f0756ea860d6d957e397f2bedfcbddd396cb6c7c2a2b5b9c59cae02c80ce", "Chungus", "Big", 4)
 
     addStudentToCourse(3, 1)
     addStudentToCourse(3, 2)
