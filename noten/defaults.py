@@ -1,5 +1,5 @@
 from main import db
-from models import student_to_course, Subject, Class, Course, User, Student, Teacher
+from models import student_to_course, Subject, Class, Course, User, Student, Teacher, MarkMeta, S1Mark, S2Mark
 
 def addStudentToCourse(uid, cid):
     s = Student.query.filter_by(uid=uid).first()
@@ -13,28 +13,28 @@ def update_sub(subid, subname, short):
     else:
         db.session.add(Subject(subid=subid, subname=subname, short=short))
 
-def update_student(uid, mail, password, name, firstname, classid):
+def update_student(uid, mail, password, surname, firstname, classid):
     s = Student.query.filter_by(uid=uid).first()
     if(s != None):
         s.mail = mail
-        s.name = name
+        s.surname = surname
         s.firstname = firstname
         s.password = password
         s.usertype = 1
         s.classid = classid
     else:
-        db.session.add(Student(uid=uid, name=name,firstname=firstname, password=password, usertype=1))
+        db.session.add(Student(uid=uid, surname=surname,firstname=firstname, password=password, usertype=1))
 
-def update_teacher(uid, mail, password, name, firstname):
+def update_teacher(uid, mail, password, surname, firstname):
     t = Teacher.query.filter_by(uid=uid).first()
     if(t != None):
         t.mail = mail
-        t.name = name
+        t.surname = surname
         t.firstname = firstname
         t.password = password
         t.usertype = 3
     else:
-        db.session.add(Teacher(uid=uid, name=name, firstname=firstname, password=password, usertype=3))
+        db.session.add(Teacher(uid=uid, surname=surname, firstname=firstname, password=password, usertype=3))
 
 
 def update_class(classid, teacherid, grade, label):
@@ -61,6 +61,33 @@ def update_course(cid, classid, subjectid, teacherid, ctype):
         course.ctype = ctype
     else:
         db.session.add(Course(cid=cid, classid=classid, subid=subjectid, ctype=ctype))
+
+def updateMarkMeta(mid, name, valance, cid):
+    markMeta = MarkMeta.query.filter_by(mid=mid).first()
+    if(markMeta != None):
+        markMeta.name = name
+        markMeta.valance = valance
+        markMeta.cid = cid
+    else:
+        db.session.add(MarkMeta(mid=mid, name=name, valance=valance, cid=cid))
+
+def updateMark(nid, metaid, studentid, mark):
+    mark = S1Mark.query.filter_by(nid=nid).first()
+    if(mark != None):
+        mark.metaid = metaid
+        mark.studentid = studentid
+        mark.mark = mark
+    else:
+        db.session.add(S1Mark(nid=nid, metaid=metaid, studentid=studentid, mark=mark))
+
+def updatePoints(nid, metaid, studentid, points):
+    mark = S2Mark.query.filter_by(nid=nid).first()
+    if(mark != None):
+        mark.metaid = metaid
+        mark.studentid = studentid
+        mark.points = points
+    else:
+        db.session.add(S2Mark(nid=nid, metaid=metaid, studentid=studentid, points=points))
 
 def load_defaults():
 
@@ -116,5 +143,19 @@ def load_defaults():
 
     addStudentToCourse(4, 1)
     addStudentToCourse(4, 3)
+
+    updateMarkMeta(mid=1, name="Test 1", valance=10, cid=2)
+    updateMarkMeta(mid=2, name="Test 2", valance=10, cid=2)
+    updateMarkMeta(mid=3, name="LEK 1", valance=30, cid=1)
+    updateMarkMeta(mid=4, name="Test 1", valance=20, cid=1)
+    updateMarkMeta(mid=3, name="Protokoll", valance=10, cid=3)
+    updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
+
+    updatePoints(nid=1, metaid=1, studentid=3, points=11)
+    updatePoints(nid=2, metaid=2, studentid=3, points=10)
+    updatePoints(nid=3, metaid=3, studentid=3, points=13)
+    updatePoints(nid=4, metaid=3, studentid=4, points=10)
+    updatePoints(nid=5, metaid=4, studentid=3, points=10)
+    updatePoints(nid=6, metaid=4, studentid=4, points=9)
 
     db.session.commit()

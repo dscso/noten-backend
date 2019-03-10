@@ -22,7 +22,7 @@ class User(db.Model):
     __tablename__ = 'users'
     uid = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(120), unique=True)
-    name = db.Column(db.String)
+    surname = db.Column(db.String)
     firstname = db.Column(db.String)
     password = db.Column(db.String)
     usertype = db.Column(db.Integer, default=0)
@@ -69,6 +69,11 @@ class Student(User):
         return jsonify([e.serialize() for e in self.courses])
         # return jsonify([e.serialize() for e in student_to_course.query.filter_by(uid=self.uid).all()])
 
+    def getMarks(self):
+        if(self.clazz.getSek() == 1): # Sek 1
+            return jsonify([e.serialize() for e in S1Mark.query.filter_by(studentid=self.uid).all()])
+        elif(self.clazz.getSek() == 2): # Sek 2
+            return jsonify([e.serialize() for e in S2Mark.query.filter_by(studentid=self.uid).all()])
 
 class Teacher(User, db.Model):
     __tablename__ = "teachers"
@@ -159,6 +164,8 @@ class Class(db.Model):
     def getStudents(self):
         return jsonify([e.serialize() for e in self.students])
 
+    def getSek(self):
+        return 1 if self.grade < 11 else 2
 
 class MarkMeta(db.Model):
     __tablename__ = "markmeta"
@@ -166,24 +173,47 @@ class MarkMeta(db.Model):
     name = db.Column(db.String)
     valance = db.Column(db.Float)
     cid = db.Column(db.Integer, db.ForeignKey("courses.cid"))
+    
+    course = db.relationship("Course", backref=db.backref(__tablename__))
 
 
 class S1Mark(db.Model):
     __tablename__ = "marks_sek_I"
     nid = db.Column(db.Integer, primary_key=True)
     metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
+    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
     mark = db.Column(db.Integer)
 
     meta = db.relationship("MarkMeta", backref=db.backref(__tablename__), lazy=True)
+    student = db.relationship("Student", backref=db.backref(__tablename__))
 
+    def serialize(self): 
+        return {
+            "nid":self.nid,
+            "metaid":self.metaid,
+            "studentid":self.studentid,
+            "mark":self.mark,
+            "subject":self.meta.course.subject.subname
+        }
 
 class S2Mark(db.Model):
     __tablename__ = "marks_sek_II"
     nid = db.Column(db.Integer, primary_key=True)
     metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
+    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
     points = db.Column(db.Integer)
 
     meta = db.relationship("MarkMeta", backref=db.backref(__tablename__), lazy=True)
+    student = db.relationship("Student", backref=db.backref(__tablename__))
+
+    def serialize(self): 
+        return {
+            "nid":self.nid,
+            "metaid":self.metaid,
+            "studentid":self.studentid,
+            "points":self.points,
+            "subject":self.meta.course.subject.subname
+        }
 
 db.create_all()
 db.session.commit()

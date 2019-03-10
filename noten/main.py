@@ -82,7 +82,6 @@ def getCourseStudents(id):
 @login_required
 def getTeacherCourses(id):
     t = Teacher.query.filter_by(uid=id).first()
-    print(type(t))
     if(t != None):
         return t.getCourses()
     return sendError(404, "Not Found")
@@ -94,13 +93,21 @@ def getTeacherCourses(id):
 def getStudentCourses(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
-        print(type(s))
         return s.getCourses()
+    return sendError(404, "Not Found")
+
+@app.route("/students/<int:id>/marks")
+#@login_required
+def getStudentMarks(id):
+    s = Student.query.filter_by(uid=id).first()
+    if(s != None):
+        return s.getMarks()
     return sendError(404, "Not Found")
 
 # classes
 # class-students
 @app.route("/classes/<int:id>/students")
+@login_required
 def getClassStudents(id):
     c = Class.query.filter_by(classid=id).first()
     if(c != None):
