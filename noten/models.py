@@ -190,6 +190,7 @@ class S1Mark(db.Model):
     def serialize(self): 
         return {
             "nid":self.nid,
+            "name":self.meta.name,
             "metaid":self.metaid,
             "studentid":self.studentid,
             "mark":self.mark,
@@ -209,6 +210,7 @@ class S2Mark(db.Model):
     def serialize(self): 
         return {
             "nid":self.nid,
+            "name":self.meta.name,
             "metaid":self.metaid,
             "studentid":self.studentid,
             "points":self.points,
