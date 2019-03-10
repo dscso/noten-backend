@@ -59,14 +59,14 @@ def login():
     else:
         return sendError(401, "Login Failed")
 
-# profile
+# PROFILE
 # TODO Post Method?
 @app.route("/profile", methods=['GET']) 
 @login_required
 def profile():
     return jsonify(g.user.json())
 
-# courses
+# COURSES
 # course-students
 @app.route("/courses/<int:id>/students")
 @login_required
@@ -76,7 +76,15 @@ def getCourseStudents(id):
         return c.getStudents()
     return sendError(404, "Not Found")
 
-# teachers
+@app.route("/courses/<int:id>/marks")
+#@login_required
+def getCourseMarks(id):
+    c = Course.query.filter_by(cid=id).first()
+    if(c != None):
+        return c.getMarks()
+    return sendError(404, "Not Found")
+
+# TEACHERS
 # teacher-courses
 @app.route("/teachers/<int:id>/courses")
 @login_required
@@ -86,7 +94,7 @@ def getTeacherCourses(id):
         return t.getCourses()
     return sendError(404, "Not Found")
 
-# students
+# STUDENTS
 # student-courses
 @app.route("/students/<int:id>/courses")
 @login_required
@@ -97,14 +105,14 @@ def getStudentCourses(id):
     return sendError(404, "Not Found")
 
 @app.route("/students/<int:id>/marks")
-#@login_required
+@login_required
 def getStudentMarks(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
         return s.getMarks()
     return sendError(404, "Not Found")
 
-# classes
+# CLASSES
 # class-students
 @app.route("/classes/<int:id>/students")
 @login_required
@@ -114,7 +122,7 @@ def getClassStudents(id):
         return c.getStudents()
     return sendError(404, "Not Found")
 
-# users
+# USERS
 @app.route("/users/<int:id>", methods=['GET'])
 @login_required
 def user(id):
@@ -128,12 +136,17 @@ def user(id):
 # admin control panel
 @app.route("/acp")
 @admin
-def ccp():
+def acp():
     return jsonify("\"I can hit every software deadline given enough time.\"")
 
+# ERRORHANDLING
 def sendError(code, msg=""):
     return jsonify({"error": code, "msg":msg}), code
 
+@app.errorhandler(404)
+def not_found(e):
+    return sendError(404, "Not Found")
+
 # run the app
 if __name__ == '__main__':
-    app.run(debug=True, host= '0.0.0.0', port=5000) # host argument runs flask on the local ip so it's visible in the network
+    app.run(debug=True, host='0.0.0.0', port=5000) # host argument runs flask on the local ip so it's visible in the local network

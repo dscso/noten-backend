@@ -1,17 +1,21 @@
-import main
+import main, random, string, json
 from datetime import datetime
 from time import time
 from flask import jsonify
-import json
 db = main.db
 
-student_to_course = db.Table('student_to_course', db.Column('uid', db.Integer, db.ForeignKey('students.uid')), db.Column('cid', db.Integer, db.ForeignKey('courses.cid')))
+student_to_course = db.Table('student_to_course', 
+    db.Column('uid', db.Integer, db.ForeignKey('students.uid')), 
+    db.Column('cid', db.Integer, db.ForeignKey('courses.cid')))
 
-student_to_class = db.Table(
-    'student_to_class',
+student_to_class = db.Table('student_to_class',
     db.Column('uid', db.Integer, db.ForeignKey('students.uid')),
     db.Column('classid', db.Integer, db.ForeignKey('classes.classid')))
 
+def generateSalt():
+    # may use secure random instead.
+    # when db is created and filled we get the same salts for all the users.
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
 
 # User Model (Database)
 class User(db.Model):
@@ -25,6 +29,7 @@ class User(db.Model):
     surname = db.Column(db.String)
     firstname = db.Column(db.String)
     password = db.Column(db.String)
+    #salt = db.Column(db.String, default=generateSalt())
     usertype = db.Column(db.Integer, default=0)
     token = db.relationship("Token", backref=db.backref("users"), lazy=True)
 
@@ -111,7 +116,6 @@ class Subject(db.Model):
     subname = db.Column(db.String)
     short = db.Column(db.String(4))
 
-
 # course with one teacher and students
 class Course(db.Model):
     __tablename__ = "courses"
@@ -129,12 +133,20 @@ class Course(db.Model):
     clazz = db.relationship("Class", backref=db.backref(__tablename__), lazy=True)
     subject = db.relationship("Subject", backref=db.backref(__tablename__), lazy=True)
     students = db.relationship("Student", secondary=student_to_course, back_populates=__tablename__, lazy=True)
+    markmetas = db.relationship("MarkMeta", backref=db.backref(__tablename__))
 
     def getStudents(self):
         if (self.ctype == 1):
             return self.clazz.getStudents()
         elif (self.ctype >= 2):  # 2:WPU, 3:GK, 4:LK
             return jsonify([e.serialize() for e in self.students])
+    
+    def getMarks(self):
+        if(self.ctype <= 2):
+            return jsonify([e.serialize() for e in [f.sek1 for f in MarkMeta.query.filter_by(cid=self.cid).all()]])
+        else:
+            return jsonify({e.name:e.getMarks() for e in self.markmetas})
+
 
     def serialize(self):
         return {
@@ -146,7 +158,6 @@ class Course(db.Model):
             "teacherid": self.teacherid,
             "ctype": self.ctype
         }
-
 
 class Class(db.Model):
     __tablename__ = "classes"
@@ -175,7 +186,15 @@ class MarkMeta(db.Model):
     cid = db.Column(db.Integer, db.ForeignKey("courses.cid"))
     
     course = db.relationship("Course", backref=db.backref(__tablename__))
+    #This solution is questionable.
+    sek1 = db.relationship("S1Mark", backref=db.backref(__tablename__))
+    sek2 = db.relationship("S2Mark", backref=db.backref(__tablename__))
 
+    def getMarks(self):
+        if(self.course.ctype <= 2):
+            return [mark.serialize() for mark in self.sek1]
+        else:
+            return [mark.serialize() for mark in self.sek2]
 
 class S1Mark(db.Model):
     __tablename__ = "marks_sek_I"

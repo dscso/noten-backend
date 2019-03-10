@@ -1,11 +1,6 @@
-from flask import Flask, session, redirect, url_for, escape, request, jsonify, render_template, g
+from flask import Flask, session, redirect, url_for, request, jsonify, g
 from functools import wraps # used for decorators
-import models
-import main
-import random
-import string
-import inspect
-import hashlib
+import main, models, random, string, inspect, hashlib
 
 db = main.db
 
@@ -33,7 +28,6 @@ def sha512(string):
 
 # generates a random auth token
 def generate_token():
-    from time import time
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(128))
 
 # Checks login and returns user object in g.user
