@@ -1,5 +1,5 @@
 from main import db
-from models import student_to_course, Subject, Class, Course, User, Student, Teacher, MarkMeta, S1Mark, S2Mark
+from models import student_to_course, Subject, Class, Course, User, Student, Teacher, MarkMeta, Mark
 
 def addStudentToCourse(uid, cid):
     s = Student.query.filter_by(uid=uid).first()
@@ -72,22 +72,13 @@ def updateMarkMeta(mid, name, valance, cid):
         db.session.add(MarkMeta(mid=mid, name=name, valance=valance, cid=cid))
 
 def updateMark(nid, metaid, studentid, mark):
-    mark = S1Mark.query.filter_by(nid=nid).first()
+    mark = Mark.query.filter_by(nid=nid).first()
     if(mark != None):
         mark.metaid = metaid
         mark.studentid = studentid
         mark.mark = mark
     else:
-        db.session.add(S1Mark(nid=nid, metaid=metaid, studentid=studentid, mark=mark))
-
-def updatePoints(nid, metaid, studentid, points):
-    mark = S2Mark.query.filter_by(nid=nid).first()
-    if(mark != None):
-        mark.metaid = metaid
-        mark.studentid = studentid
-        mark.points = points
-    else:
-        db.session.add(S2Mark(nid=nid, metaid=metaid, studentid=studentid, points=points))
+        db.session.add(Mark(nid=nid, metaid=metaid, studentid=studentid, mark=mark))
 
 def load_defaults():
 
@@ -151,11 +142,11 @@ def load_defaults():
     updateMarkMeta(mid=3, name="Protokoll", valance=10, cid=3)
     updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
 
-    updatePoints(nid=1, metaid=1, studentid=3, points=11)
-    updatePoints(nid=2, metaid=2, studentid=3, points=10)
-    updatePoints(nid=3, metaid=3, studentid=3, points=13)
-    updatePoints(nid=4, metaid=3, studentid=4, points=10)
-    updatePoints(nid=5, metaid=4, studentid=3, points=10)
-    updatePoints(nid=6, metaid=4, studentid=4, points=9)
+    updateMark(nid=1, metaid=1, studentid=3, mark=11)
+    updateMark(nid=2, metaid=2, studentid=3, mark=10)
+    updateMark(nid=3, metaid=3, studentid=3, mark=13)
+    updateMark(nid=4, metaid=3, studentid=4, mark=10)
+    updateMark(nid=5, metaid=4, studentid=3, mark=10)
+    updateMark(nid=6, metaid=4, studentid=4, mark=9)
 
     db.session.commit()

@@ -1,23 +1,12 @@
-import os
-import inspect
-
-import traceback
-
 from flask import Flask, abort, redirect, render_template, request, url_for, jsonify, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS # cross-origin support
 from time import time
-import models
-import datetime
+import models, datetime, os, inspect, traceback
 
-# initialize 'app' with Flask instance
-app = Flask(__name__)
-# cross origin
-CORS(app)
 
-# secret key to encrypt session - obsolet due to changed authentication
-f=open("secret.key", "r")
-app.secret_key = f.read()
+app = Flask(__name__) # initializing 'app' with Flask instance
+CORS(app) # cross origin support
 
 #configure sqlalchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///../database.db"
@@ -41,15 +30,11 @@ def index():
 def login():
     try:
         param = request.get_json()
-        print(param)
-        mail = param.get('mail')
-        print(mail)
-        password = param.get('password')
-        print(password)
-        if(mail != None and password != None):
-            user = auth(mail, password)
+        mail = param['mail']
+        password = param['password']
+        user = auth(mail, password)
     except:
-        print(traceback.format_exc())
+        # print(traceback.format_exc()) # Debug Traceback
         return sendError(400, "Bad request")
     if (user != False):
         json = user.json()
@@ -105,7 +90,7 @@ def getStudentCourses(id):
     return sendError(404, "Not Found")
 
 @app.route("/students/<int:id>/marks")
-@login_required
+#@login_required
 def getStudentMarks(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
@@ -137,7 +122,7 @@ def user(id):
 @app.route("/acp")
 @admin
 def acp():
-    return jsonify("\"I can hit every software deadline given enough time.\"")
+    return "\"I can hit every software deadline given enough time.\""
 
 # ERRORHANDLING
 def sendError(code, msg=""):
