@@ -8,7 +8,7 @@ db = main.db
 def auth(mail, password):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
-        print(user.password, sha512(password))
+        #print(user.password, sha512(password))
         if(user.password == sha512(password)):
             token = user.token[0] if len(user.token) == 1 else None
             if(token != None):

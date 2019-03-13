@@ -71,14 +71,14 @@ def updateMarkMeta(mid, name, valance, cid):
     else:
         db.session.add(MarkMeta(mid=mid, name=name, valance=valance, cid=cid))
 
-def updateMark(nid, metaid, studentid, mark):
-    mark = Mark.query.filter_by(nid=nid).first()
-    if(mark != None):
-        mark.metaid = metaid
-        mark.studentid = studentid
-        mark.mark = mark
+def updateMark(markid, metaid, studentid, mark):
+    m = Mark.query.filter_by(nid=markid).first()
+    if(m != None):
+        m.metaid = metaid
+        m.studentid = studentid
+        m.mark = mark
     else:
-        db.session.add(Mark(nid=nid, metaid=metaid, studentid=studentid, mark=mark))
+        db.session.add(Mark(nid=markid, metaid=metaid, studentid=studentid, m=m))
 
 def load_defaults():
 
@@ -142,11 +142,11 @@ def load_defaults():
     updateMarkMeta(mid=3, name="Protokoll", valance=10, cid=3)
     updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
 
-    updateMark(nid=1, metaid=1, studentid=3, mark=11)
-    updateMark(nid=2, metaid=2, studentid=3, mark=10)
-    updateMark(nid=3, metaid=3, studentid=3, mark=13)
-    updateMark(nid=4, metaid=3, studentid=4, mark=10)
-    updateMark(nid=5, metaid=4, studentid=3, mark=10)
-    updateMark(nid=6, metaid=4, studentid=4, mark=9)
+    updateMark(markid=1, metaid=1, studentid=3, mark=11)
+    updateMark(markid=2, metaid=2, studentid=3, mark=10)
+    updateMark(markid=3, metaid=3, studentid=3, mark=13)
+    updateMark(markid=4, metaid=3, studentid=4, mark=10)
+    updateMark(markid=5, metaid=4, studentid=3, mark=10)
+    updateMark(markid=6, metaid=4, studentid=4, mark=9)
 
     db.session.commit()

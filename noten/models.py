@@ -12,6 +12,7 @@ student_to_class = db.Table('student_to_class',
     db.Column('uid', db.Integer, db.ForeignKey('students.uid')),
     db.Column('classid', db.Integer, db.ForeignKey('classes.classid')))
 
+# update: no time for security, no salts, we eat too much salt anyway.
 def generateSalt():
     # may use secure random instead.
     # when db is created and filled we get the same salts for all the users.
@@ -38,7 +39,7 @@ class User(db.Model):
             "type": self.usertype,
             "uid": self.uid,
             "firstname": self.firstname,
-            "surname": self.name
+            "surname": self.surname
         }
 
     def getToken(self):
@@ -62,7 +63,7 @@ class Student(User):
     def serialize(self):
         return {
             "uid": self.uid,
-            "surname": self.name,
+            "surname": self.surname,
             "firstname": self.firstname,
             "classid": self.classid,
             "grade":self.getGrade(),
@@ -173,6 +174,7 @@ class Class(db.Model):
     def getStudents(self):
         return jsonify([e.serialize() for e in self.students])
 
+######## OLD - remove?
     def getSek(self):
         return 1 if self.grade < 11 else 2
 
@@ -197,14 +199,14 @@ class MarkMeta(db.Model):
         }
 
 class Mark(db.Model):
-    __tablename__ = "marks_sek_II"
+    __tablename__ = "marks"
     nid = db.Column(db.Integer, primary_key=True)
     metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
     studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
-    points = db.Column(db.Integer)
+    mark = db.Column(db.Integer)
 
-    meta = db.relationship("MarkMeta", backref=db.backref(__tablename__), lazy=True)
-    student = db.relationship("Student", backref=db.backref(__tablename__))
+    #meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
+    #student = db.relationship("Student", backref=db.backref(__tablename__), lazy=True)
 
     def serialize(self): 
         return {
@@ -212,7 +214,7 @@ class Mark(db.Model):
             "name":self.meta.name,
             "metaid":self.metaid,
             "studentid":self.studentid,
-            "points":self.points,
+            "mark":self.mark,
             "subject":self.meta.course.subject.subname
         }
 
