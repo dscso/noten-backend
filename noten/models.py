@@ -31,7 +31,7 @@ class User(db.Model):
     firstname = db.Column(db.String)
     password = db.Column(db.String)
     #salt = db.Column(db.String, default=generateSalt())
-    usertype = db.Column(db.Integer, default=0)
+    usertype = db.Column(db.Integer, default=1)
     token = db.relationship("Token", backref=db.backref("users"), lazy=True)
 
     def json(self):
@@ -60,6 +60,8 @@ class Student(User):
     clazz = db.relationship("Class", back_populates=__tablename__)
     courses = db.relationship("Course", secondary=student_to_course, back_populates=__tablename__)
 
+    marks = db.relationship("Mark", backref=db.backref(__tablename__))
+
     def serialize(self):
         return {
             "uid": self.uid,
@@ -77,8 +79,9 @@ class Student(User):
         # return jsonify([e.serialize() for e in student_to_course.query.filter_by(uid=self.uid).all()])
 
     def getMarks(self):
-        marks = {}
-        return marks
+        metas = {e.cid:[m.serialize() for m in e.markmetas] for e in self.courses}
+        marks = [e.serialize() for e in self.marks]
+        return jsonify({"metas":metas, "marks":marks})
 
 class Teacher(User, db.Model):
     __tablename__ = "teachers"
@@ -211,7 +214,7 @@ class Mark(db.Model):
     mark = db.Column(db.Integer)
 
     meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
-    student = db.relationship("Student", backref=db.backref(__tablename__), lazy=True)
+    student = db.relationship("Student", back_populates=__tablename__, lazy=True)
 
     def serialize(self): 
         return {

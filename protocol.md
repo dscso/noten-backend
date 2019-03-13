@@ -88,11 +88,11 @@ This is used to render the colums of the table with the grades
 ```
 # Authentification
 Using authetification headers (like oauth)
-`Authorization` get set to `<userid>:<token>`
+`Authorization` get set to `Bearer <token>`
 Example:
 ```YML
 Accept: application/json
-Authorization: 1:K3nnpiMFi8nEHnk0VK1RNR94a2PmOYC0
+Authorization: Bearer K3nnpiMFi8nEHnk0VK1RNR94a2PmOYC0
 Origin: http://localhost:8080
 Referer: http://localhost:8080/
 ...
