@@ -78,7 +78,7 @@ def updateMark(markid, metaid, studentid, mark):
         m.studentid = studentid
         m.mark = mark
     else:
-        db.session.add(Mark(nid=markid, metaid=metaid, studentid=studentid, m=m))
+        db.session.add(Mark(nid=markid, metaid=metaid, studentid=studentid, mark=mark))
 
 def load_defaults():
 
@@ -129,11 +129,11 @@ def load_defaults():
     update_student(3, "hugh@plg", "a8d5562e2c8f95053bb410a1fe18f88859b7df4c82ca41b25c0bcb9508004181c243f0756ea860d6d957e397f2bedfcbddd396cb6c7c2a2b5b9c59cae02c80ce", "Mungus", "Hugh", 4)
     update_student(4, "big@plg", "a8d5562e2c8f95053bb410a1fe18f88859b7df4c82ca41b25c0bcb9508004181c243f0756ea860d6d957e397f2bedfcbddd396cb6c7c2a2b5b9c59cae02c80ce", "Chungus", "Big", 4)
 
-    addStudentToCourse(3, 1)
+    addStudentToCourse(3, 1) # studentid, courseid
     addStudentToCourse(3, 2)
 
     addStudentToCourse(4, 1)
-    addStudentToCourse(4, 3)
+    addStudentToCourse(4, 2)
 
     updateMarkMeta(mid=1, name="Test 1", valance=10, cid=2)
     updateMarkMeta(mid=2, name="Test 2", valance=10, cid=2)
@@ -143,7 +143,9 @@ def load_defaults():
     updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
 
     updateMark(markid=1, metaid=1, studentid=3, mark=11)
-    updateMark(markid=2, metaid=2, studentid=3, mark=10)
+    updateMark(markid=10, metaid=2, studentid=4, mark=10)
+    updateMark(markid=9, metaid=1, studentid=4, mark=15)
+    updateMark(markid=2, metaid=2, studentid=3, mark=9)
     updateMark(markid=3, metaid=3, studentid=3, mark=13)
     updateMark(markid=4, metaid=3, studentid=4, mark=10)
     updateMark(markid=5, metaid=4, studentid=3, mark=10)

@@ -136,15 +136,20 @@ class Course(db.Model):
     markmetas = db.relationship("MarkMeta", backref=db.backref(__tablename__))
 
     def getStudents(self):
-        if (self.ctype == 1):
-            return self.clazz.getStudents()
-        elif (self.ctype >= 2):  # 2:WPU, 3:GK, 4:LK
-            return jsonify([e.serialize() for e in self.students])
+        return jsonify([e.serialize() for e in self.students])
     
     def getMarks(self):
+        students = {}
+        for markmeta in self.markmetas:
+            for mark in markmeta.getMarks():
+                try:
+                    students[mark.student.uid].append(mark.serialize())
+                except KeyError:
+                    students[mark.student.uid] = []
+                    students[mark.student.uid].append(mark.serialize())
         return jsonify({
             "metas":{e.mid:e.serialize() for e in self.markmetas},
-            "students":[{e.studentid:e.serialize() for e in f.getMarks()} for f in self.markmetas]
+            "students":students
             })
 
     def serialize(self):
@@ -205,8 +210,8 @@ class Mark(db.Model):
     studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
     mark = db.Column(db.Integer)
 
-    #meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
-    #student = db.relationship("Student", backref=db.backref(__tablename__), lazy=True)
+    meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
+    student = db.relationship("Student", backref=db.backref(__tablename__), lazy=True)
 
     def serialize(self): 
         return {
