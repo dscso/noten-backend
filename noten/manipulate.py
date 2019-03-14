@@ -73,7 +73,6 @@ def updateMarkMeta(mid, name, valance, cid):
 # update Mark
 def updateMark(metaid, studentid, mark):
     m = None
-    print (m)
     if(m != None):
         m.metaid = metaid
         m.studentid = studentid

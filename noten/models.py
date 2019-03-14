@@ -208,8 +208,9 @@ class MarkMeta(db.Model):
 
 class Mark(db.Model):
     __tablename__ = "marks"
-    metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"), primary_key=True)
-    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"), primary_key=True)
+    mid = db.Column(db.Integer, primary_key=True)
+    metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
+    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
     mark = db.Column(db.Integer)
 
     meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
