@@ -79,7 +79,7 @@ def createMarkMeta(cid):
         manipulate.createMarkMeta(name, valence, cid)
         return jsonify({"success":True})
     except:
-        print(traceback.format_exc()) # Debug Traceback
+        #print(traceback.format_exc()) # Debug
         return sendError(400, "Bad Request")
 
 
@@ -88,6 +88,9 @@ def updateMarkMeta(cid, mid):
     try:
         if(request.method == 'PUT'):
             meta = models.MarkMeta.query.filter_by(metaid=metaid, cid=cid).first()
+            params = request.get_json()
+            name = params['name']
+            valence = params['valence']
             if(meta != None):
                 meta.name = name
                 meta.valence = valence
@@ -101,7 +104,7 @@ def updateMarkMeta(cid, mid):
                 "msg":manipulate.deleteMarkMeta(mid)
                 })
     except:
-        print(traceback.format_exc()) # Debug Traceback
+        #print(traceback.format_exc()) # Debug
         return sendError(400, "Bad Request")
 
 # TEACHERS
