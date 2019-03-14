@@ -61,25 +61,35 @@ def update_course(cid, classid, subjectid, teacherid, ctype):
     else:
         db.session.add(models.Course(cid=cid, classid=classid, subid=subjectid, ctype=ctype))
 
-def updateMarkMeta(mid, name, valance, cid):
+def updateMarkMeta(mid, name, valence, cid):
     markMeta = models.MarkMeta.query.filter_by(mid=mid).first()
     if(markMeta != None):
         markMeta.name = name
-        markMeta.valance = valance
+        markMeta.valence = valence
         markMeta.cid = cid
     else:
-        db.session.add(models.MarkMeta(mid=mid, name=name, valance=valance, cid=cid))
+        db.session.add(models.MarkMeta(mid=mid, name=name, valence=valence, cid=cid))
 
 # update Mark
 def updateMark(metaid, studentid, mark):
     m = models.Mark.query.filter_by(metaid=metaid, studentid=studentid).first()
     if(m != None):
-        m.metaid = metaid
-        m.studentid = studentid
         m.mark = mark
     else:
         db.session.add(models.Mark(metaid=metaid, studentid=studentid, mark=mark))
 
+def createMarkMeta(name, valence, cid):
+    db.session.add(models.MarkMeta(name=name, valence=valence, cid=cid))
+    commit()
+
+def deleteMarkMeta(mid):
+    meta = models.MarkMeta.query.filter_by(mid=mid).first()
+    if(meta != None):
+        db.session.delete(meta)
+        commit()
+        return "Deleted successfully"
+    else:
+        return "Not Found"
 
 def commit():
     db.session.commit()

@@ -190,7 +190,7 @@ class MarkMeta(db.Model):
     __tablename__ = "markmeta"
     mid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    valance = db.Column(db.Float)
+    valence = db.Column(db.Float)
     cid = db.Column(db.Integer, db.ForeignKey("courses.cid"))
     
     course = db.relationship("Course", backref=db.backref(__tablename__))

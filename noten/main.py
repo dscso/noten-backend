@@ -69,6 +69,41 @@ def getCourseMarks(id):
         return c.getMarks()
     return sendError(404, "Not Found")
 
+@app.route("/courses/<int:cid>/markmetas", methods=['POST'])
+#@login_required
+def createMarkMeta(cid):
+    try:
+        param = request.get_json()
+        name = param['name']
+        valence = param['valence']
+        manipulate.createMarkMeta(name, valence, cid)
+        return jsonify({"success":True})
+    except:
+        print(traceback.format_exc()) # Debug Traceback
+        return sendError(400, "Bad Request")
+
+
+@app.route("/courses/<int:cid>/markmetas/<int:mid>", methods=['PUT', 'DELETE'])
+def updateMarkMeta(cid, mid):
+    try:
+        if(request.method == 'PUT'):
+            meta = models.MarkMeta.query.filter_by(metaid=metaid, cid=cid).first()
+            if(meta != None):
+                meta.name = name
+                meta.valence = valence
+                return {"success":True}
+            else:
+                return sendError(404, "Not Found")
+        elif(request.method == 'DELETE'):
+            
+            return jsonify({
+                "success":True,
+                "msg":manipulate.deleteMarkMeta(mid)
+                })
+    except:
+        print(traceback.format_exc()) # Debug Traceback
+        return sendError(400, "Bad Request")
+
 # TEACHERS
 # teacher-courses
 @app.route("/teachers/<int:id>/courses")
@@ -105,7 +140,7 @@ def setMark(courseid, studentid, markmetaid):
         mark = param['mark']
         manipulate.updateMark(metaid=markmetaid, studentid=studentid, mark=mark)
         manipulate.commit()
-        return "{\"success\": true}"
+        return jsonify({"success": True})
     except:
         return sendError(400, "Bad Request")
 

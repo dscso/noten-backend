@@ -56,12 +56,12 @@ def load_defaults():
     addStudentToCourse(4, 1)
     addStudentToCourse(4, 2)
 
-    updateMarkMeta(mid=1, name="Test 1", valance=10, cid=2)
-    updateMarkMeta(mid=2, name="Test 2", valance=10, cid=2)
-    updateMarkMeta(mid=3, name="LEK 1", valance=30, cid=1)
-    updateMarkMeta(mid=4, name="Test 1", valance=20, cid=1)
-    updateMarkMeta(mid=3, name="Protokoll", valance=10, cid=3)
-    updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
+    updateMarkMeta(mid=1, name="Test 1", valence=10, cid=2)
+    updateMarkMeta(mid=2, name="Test 2", valence=10, cid=2)
+    updateMarkMeta(mid=3, name="LEK 1", valence=30, cid=1)
+    updateMarkMeta(mid=4, name="Test 1", valence=20, cid=1)
+    updateMarkMeta(mid=3, name="Protokoll", valence=10, cid=3)
+    updateMarkMeta(mid=3, name="Präs 1", valence=30, cid=3)
     
     updateMark(metaid=1, studentid=3, mark=11)
     updateMark(metaid=2, studentid=4, mark=10)
