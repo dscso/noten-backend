@@ -87,18 +87,18 @@ def createMarkMeta(cid):
 def updateMarkMeta(cid, mid):
     try:
         if(request.method == 'PUT'):
-            meta = models.MarkMeta.query.filter_by(metaid=metaid, cid=cid).first()
             params = request.get_json()
             name = params['name']
             valence = params['valence']
+            meta = models.MarkMeta.query.filter_by(mid=mid, cid=cid).first()
             if(meta != None):
                 meta.name = name
                 meta.valence = valence
-                return {"success":True}
+                manipulate.commit()
+                return jsonify({"success":True})
             else:
                 return sendError(404, "Not Found")
         elif(request.method == 'DELETE'):
-            
             return jsonify({
                 "success":True,
                 "msg":manipulate.deleteMarkMeta(mid)
