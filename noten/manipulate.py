@@ -79,7 +79,6 @@ def updateMark(metaid, studentid, mark):
         m.mark = mark
     else:
         db.session.add(models.Mark(metaid=metaid, studentid=studentid, mark=mark))
-    commit()
 
 
 def commit():

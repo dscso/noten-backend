@@ -104,9 +104,10 @@ def setMark(courseid, studentid, markmetaid):
         param = request.get_json()
         mark = param['mark']
         manipulate.updateMark(metaid=markmetaid, studentid=studentid, mark=mark)
+        manipulate.commit()
+        return "{\"success\": true}"
     except:
         return sendError(400, "Bad Request")
-    return jsonify({"hi":"ho"})
 
 # CLASSES
 # class-students
