@@ -34,7 +34,7 @@ def login():
         password = param['password']
         user = auth(mail, password)
     except:
-        print(traceback.format_exc()) # Debug Traceback
+        # print(traceback.format_exc()) # Debug Traceback
         return sendError(400, "Bad request")
     if (user != False):
         json = user.json()
@@ -100,7 +100,12 @@ def getStudentMarks(id):
 @app.route("/courses/<int:courseid>/students/<int:studentid>/marks/<int:markmetaid>",methods=['POST'])
 #@login_required
 def setMark(courseid, studentid, markmetaid):
-    manipulate.updateMark(metaid=markmetaid, studentid=studentid, mark=11)
+    try:
+        param = request.get_json()
+        mark = param['mark']
+        manipulate.updateMark(metaid=markmetaid, studentid=studentid, mark=mark)
+    except:
+        return sendError(400, "Bad Request")
     return jsonify({"hi":"ho"})
 
 # CLASSES

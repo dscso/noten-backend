@@ -72,10 +72,15 @@ def updateMarkMeta(mid, name, valance, cid):
 
 # update Mark
 def updateMark(metaid, studentid, mark):
-    m = None
+    m = models.Mark.query.filter_by(metaid=metaid, studentid=studentid).first()
     if(m != None):
         m.metaid = metaid
         m.studentid = studentid
         m.mark = mark
     else:
         db.session.add(models.Mark(metaid=metaid, studentid=studentid, mark=mark))
+    commit()
+
+
+def commit():
+    db.session.commit()

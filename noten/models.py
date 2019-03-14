@@ -208,6 +208,9 @@ class MarkMeta(db.Model):
 
 class Mark(db.Model):
     __tablename__ = "marks"
+    __table_args__ = (
+        db.UniqueConstraint("metaid", "studentid", name="MetaStudentUnique"),
+    )
     mid = db.Column(db.Integer, primary_key=True)
     metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
     studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
