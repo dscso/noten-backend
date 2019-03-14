@@ -81,7 +81,8 @@ class Student(User):
     def getMarks(self):
         metas = {e.cid:[m.serialize() for m in e.markmetas] for e in self.courses}
         marks = [e.serialize() for e in self.marks]
-        return jsonify({"metas":metas, "marks":marks})
+        courses = [e.serialize() for e in self.courses]
+        return jsonify({"metas":metas, "marks":marks, "courses":courses})
 
 class Teacher(User, db.Model):
     __tablename__ = "teachers"

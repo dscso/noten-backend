@@ -118,7 +118,7 @@ def getTeacherCourses(id):
 # STUDENTS
 # student-courses
 @app.route("/students/<int:id>/courses")
-@login_required
+#@login_required
 def getStudentCourses(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
