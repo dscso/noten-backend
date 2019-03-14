@@ -208,9 +208,8 @@ class MarkMeta(db.Model):
 
 class Mark(db.Model):
     __tablename__ = "marks"
-    nid = db.Column(db.Integer, primary_key=True)
-    metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"))
-    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"))
+    metaid = db.Column(db.Integer, db.ForeignKey("markmeta.mid"), primary_key=True)
+    studentid = db.Column(db.Integer, db.ForeignKey("students.uid"), primary_key=True)
     mark = db.Column(db.Integer)
 
     meta = db.relationship("MarkMeta", back_populates=__tablename__, lazy=True)
@@ -218,7 +217,6 @@ class Mark(db.Model):
 
     def serialize(self): 
         return {
-            "nid":self.nid,
             "name":self.meta.name,
             "metaid":self.metaid,
             "studentid":self.studentid,

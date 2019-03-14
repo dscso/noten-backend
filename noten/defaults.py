@@ -1,84 +1,5 @@
-from main import db
-from models import student_to_course, Subject, Class, Course, User, Student, Teacher, MarkMeta, Mark
+from manipulate import *
 
-def addStudentToCourse(uid, cid):
-    s = Student.query.filter_by(uid=uid).first()
-    s.courses.append(Course.query.filter_by(cid=cid).first())
-
-def update_sub(subid, subname, short):
-    sub = Subject.query.filter_by(subid=subid).first()
-    if(sub != None):
-        sub.subname = subname
-        sub.short = short
-    else:
-        db.session.add(Subject(subid=subid, subname=subname, short=short))
-
-def update_student(uid, mail, password, surname, firstname, classid):
-    s = Student.query.filter_by(uid=uid).first()
-    if(s != None):
-        s.mail = mail
-        s.surname = surname
-        s.firstname = firstname
-        s.password = password
-        s.usertype = 1
-        s.classid = classid
-    else:
-        db.session.add(Student(uid=uid, surname=surname,firstname=firstname, password=password, usertype=1))
-
-def update_teacher(uid, mail, password, surname, firstname):
-    t = Teacher.query.filter_by(uid=uid).first()
-    if(t != None):
-        t.mail = mail
-        t.surname = surname
-        t.firstname = firstname
-        t.password = password
-        t.usertype = 3
-    else:
-        db.session.add(Teacher(uid=uid, surname=surname, firstname=firstname, password=password, usertype=3))
-
-
-def update_class(classid, teacherid, grade, label):
-    clazz = Class.query.filter_by(classid=classid).first()
-    if(clazz != None):
-        clazz.teacherid = teacherid
-        clazz.grade = grade
-        clazz.label = label
-        clazz.is_grouped = getGroupState(grade)
-    else:
-        db.session.add(Class(classid=classid, teacherid=teacherid, grade=grade, label=label))
-
-def getGroupState(grade):
-    if(grade < 11):
-        return True
-    return False
-
-def update_course(cid, classid, subjectid, teacherid, ctype):
-    course = Course.query.filter_by(cid=cid).first()
-    if(course != None):
-        course.classid = classid
-        course.subid = subjectid
-        course.teacherid = teacherid
-        course.ctype = ctype
-    else:
-        db.session.add(Course(cid=cid, classid=classid, subid=subjectid, ctype=ctype))
-
-def updateMarkMeta(mid, name, valance, cid):
-    markMeta = MarkMeta.query.filter_by(mid=mid).first()
-    if(markMeta != None):
-        markMeta.name = name
-        markMeta.valance = valance
-        markMeta.cid = cid
-    else:
-        db.session.add(MarkMeta(mid=mid, name=name, valance=valance, cid=cid))
-
-def updateMark(markid, metaid, studentid, mark):
-    m = Mark.query.filter_by(nid=markid).first()
-    if(m != None):
-        m.metaid = metaid
-        m.studentid = studentid
-        m.mark = mark
-    else:
-        db.session.add(Mark(nid=markid, metaid=metaid, studentid=studentid, mark=mark))
 
 def load_defaults():
 
@@ -141,14 +62,15 @@ def load_defaults():
     updateMarkMeta(mid=4, name="Test 1", valance=20, cid=1)
     updateMarkMeta(mid=3, name="Protokoll", valance=10, cid=3)
     updateMarkMeta(mid=3, name="Präs 1", valance=30, cid=3)
-
-    updateMark(markid=1, metaid=1, studentid=3, mark=11)
-    updateMark(markid=10, metaid=2, studentid=4, mark=10)
-    updateMark(markid=9, metaid=1, studentid=4, mark=15)
-    updateMark(markid=2, metaid=2, studentid=3, mark=9)
-    updateMark(markid=3, metaid=3, studentid=3, mark=13)
-    updateMark(markid=4, metaid=3, studentid=4, mark=10)
-    updateMark(markid=5, metaid=4, studentid=3, mark=10)
-    updateMark(markid=6, metaid=4, studentid=4, mark=9)
-
+    
+    updateMark(metaid=1, studentid=3, mark=11)
+    updateMark(metaid=2, studentid=4, mark=10)
+    updateMark(metaid=1, studentid=4, mark=15)
+    updateMark(metaid=2, studentid=3, mark=9)
+    updateMark(metaid=3, studentid=3, mark=13)
+    updateMark(metaid=3, studentid=4, mark=10)
+    updateMark(metaid=4, studentid=3, mark=10)
+    updateMark(metaid=4, studentid=4, mark=9)
+    
+    
     db.session.commit()

@@ -17,8 +17,8 @@ db = SQLAlchemy(app)
 
 from models import *
 from auth import auth, login_required, parseAuth, admin
+import manipulate
 
-# index - actually obsolet, used for version now
 @app.route("/")
 def index():
     return jsonify({
@@ -34,7 +34,7 @@ def login():
         password = param['password']
         user = auth(mail, password)
     except:
-        # print(traceback.format_exc()) # Debug Traceback
+        print(traceback.format_exc()) # Debug Traceback
         return sendError(400, "Bad request")
     if (user != False):
         json = user.json()
@@ -96,6 +96,12 @@ def getStudentMarks(id):
     if(s != None):
         return s.getMarks()
     return sendError(404, "Not Found")
+
+@app.route("/courses/<int:courseid>/students/<int:studentid>/marks/<int:markmetaid>",methods=['POST'])
+#@login_required
+def setMark(courseid, studentid, markmetaid):
+    manipulate.updateMark(metaid=markmetaid, studentid=studentid, mark=11)
+    return jsonify({"hi":"ho"})
 
 # CLASSES
 # class-students
