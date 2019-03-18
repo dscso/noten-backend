@@ -78,6 +78,17 @@ None
 }
 ```
 This is used to render the colums of the table with the grades
+# Create new MarkMeta for course
+    /courses/<courseid>/markmetas [POST,PUT,DELETE]
+### Paramerters [login_required] 
+    name, valance
+### Response 200/403
+```JS
+{
+    "success":true
+}
+```
+
 # Error message
 
 ```JS
