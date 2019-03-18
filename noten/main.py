@@ -45,14 +45,14 @@ def login():
         return sendError(401, "Login Failed")
 
 # PROFILE
-# TODO Post Method?
+# TODO Post Method - not necessary due to mission Admin-Control-Panel
 @app.route("/profile", methods=['GET']) 
 @login_required
 def profile():
     return jsonify(g.user.json())
 
 # COURSES
-# course-students
+# course-students - returns 
 @app.route("/courses/<int:id>/students")
 @login_required
 def getCourseStudents(id):
@@ -70,7 +70,7 @@ def getCourseMarks(id):
     return sendError(404, "Not Found")
 
 @app.route("/courses/<int:cid>/markmetas", methods=['POST'])
-#@login_required
+@login_required
 def createMarkMeta(cid):
     try:
         param = request.get_json()
@@ -83,14 +83,11 @@ def createMarkMeta(cid):
         return sendError(400, "Bad Request")
 
 
-@app.route("/courses/<int:cid>/markmetas/<int:mid>", methods=['PUT', 'DELETE'])
+@app.route("/courses/<int:cid>/markmetas/<int:mid>", methods=['POST', 'PUT', 'DELETE'])
 def updateMarkMeta(cid, mid):
     try:
-        if(request.method == 'PUT'):
-            params = request.get_json()
-            name = params['name']
-            valence = params['valence']
-            meta = models.MarkMeta.query.filter_by(mid=mid, cid=cid).first()
+        if(request.method == 'POST' or request.method == 'PUT'):
+            meta = models.MarkMeta.query.filter_by(metaid=metaid, cid=cid).first()
             if(meta != None):
                 meta.name = name
                 meta.valence = valence
@@ -102,9 +99,8 @@ def updateMarkMeta(cid, mid):
             return jsonify({
                 "success":True,
                 "msg":manipulate.deleteMarkMeta(mid)
-                })
+            })
     except:
-        #print(traceback.format_exc()) # Debug
         return sendError(400, "Bad Request")
 
 # TEACHERS
@@ -120,7 +116,7 @@ def getTeacherCourses(id):
 # STUDENTS
 # student-courses
 @app.route("/students/<int:id>/courses")
-@login_required
+#@login_required
 def getStudentCourses(id):
     s = Student.query.filter_by(uid=id).first()
     if(s != None):
