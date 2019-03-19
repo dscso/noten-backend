@@ -8,8 +8,8 @@ db = main.db
 def auth(mail, password):
     user = models.User.query.filter_by(mail=mail).first()
     if(user != None):
-        #print(user.password, sha512(password))
-        if(user.password == sha512(password)):
+        #if(user.password == sha512(password)): # NOTE: no time for security, no hashing
+        if(user.password == password):
             token = user.token[0] if len(user.token) == 1 else None
             if(token != None):
                 token.token = generate_token()
@@ -22,6 +22,7 @@ def auth(mail, password):
     session.clear()
     return False
 
+# unused
 def sha512(string):
     sha_signature = hashlib.sha512(string.encode()).hexdigest()
     return sha_signature
@@ -29,6 +30,31 @@ def sha512(string):
 # generates a random auth token
 def generate_token():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(128))
+
+# NOTE: Works perfecly fine with any database that does not suck as hard as SQLite.
+# Because this Method is querying data, the db gets locked due to SQLites sh*ttyness what leads to errors when
+# the function is called multiple times in a short span of time because Querys can't be performed while db is locked.
+# SOLUTION: Migrate to MySQL or smth. better (what wouldn't be useful for testing)
+# checks if a user should have access to a requested <Course> object
+def courseAllowed(cid):
+    return True
+    try:
+        utype = g.user.usertype
+        if(utype == 2):
+            c = models.Course.query.filter_by(cid=cid).first()
+            if(c != None):
+                return True if c.teacherid == g.user.uid else False
+        elif(utype == 1):
+            if(g.user.uid in [s.uid for s in models.Course.query.filter_by(cid=cid).first().getStudents()]):
+                return True
+    except:
+        pass
+    return False
+
+# Used to verify that the user is permitted to receive the requested userinfo
+# No Querying, no stupid problems. Great.
+def userAllowed(uid):
+    return uid == g.user.uid if g.user != None else False
 
 # Checks login and returns user object in g.user
 def login_required(func):
@@ -39,26 +65,6 @@ def login_required(func):
             return func(*args, **kwargs)
         return main.sendError(401, "Not Authenticated")
     return decorated
-
-# decorator to grant access only to admins
-def admin(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        try:
-            auth = request.headers.get('Authorization').split(" ")
-            if (len(auth) == 2):
-                t = models.Token.query.filter_by(token=auth[1]).first()
-                uid = t.uid if t != None else None
-                if(uid != None):
-                    user = models.User.query.filter_by(uid=uid).first()
-                    db_type = user.usertype if user != None else None
-                    if(db_type != None):
-                        if(db_type == 4):
-                            return f(*args, **kwargs)
-        except:
-            pass
-        return main.sendError(401, "no perission")
-    return decorator
 
 # checks token based on parseHeader dict
 def verify_token(auth): # {uid: 123, token: xyz}

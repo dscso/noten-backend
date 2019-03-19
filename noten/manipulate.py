@@ -1,5 +1,9 @@
 from main import db, models
 
+
+# The functions in this File are used to modify the database.
+# The names of the functions are speaking for themselves
+
 def addStudentToCourse(uid, cid):
     s = models.Student.query.filter_by(uid=uid).first()
     s.courses.append(models.Course.query.filter_by(cid=cid).first())
@@ -31,9 +35,9 @@ def update_teacher(uid, mail, password, surname, firstname):
         t.surname = surname
         t.firstname = firstname
         t.password = password
-        t.usertype = 3
+        t.usertype = 2
     else:
-        db.session.add(models.Teacher(uid=uid, surname=surname, firstname=firstname, password=password, usertype=3))
+        db.session.add(models.Teacher(uid=uid, surname=surname, firstname=firstname, password=password, usertype=2))
 
 
 def update_class(classid, teacherid, grade, label):
@@ -70,7 +74,6 @@ def updateMarkMeta(mid, name, valence, cid):
     else:
         db.session.add(models.MarkMeta(mid=mid, name=name, valence=valence, cid=cid))
 
-# update Mark
 def updateMark(metaid, studentid, mark):
     m = models.Mark.query.filter_by(metaid=metaid, studentid=studentid).first()
     if(m != None):
@@ -91,5 +94,7 @@ def deleteMarkMeta(mid):
     else:
         return "Not Found"
 
+
+# used to write cached changes to db
 def commit():
     db.session.commit()
