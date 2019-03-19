@@ -35,6 +35,7 @@ def generate_token():
 # Because this Method is querying data, the db gets locked due to SQLites sh*ttyness what leads to errors when
 # the function is called multiple times in a short span of time because Querys can't be performed while db is locked.
 # SOLUTION: Migrate to MySQL or smth. better (what wouldn't be useful for testing)
+#
 # checks if a user should have access to a requested <Course> object
 def courseAllowed(cid):
     return True

@@ -28,7 +28,6 @@ def index():
         "name":"MarkManager",
         "version":"v0.1_alpha",
         "date":"04.01.2019 - 20.03.2019",
-        "motivation":"Computer Science - Project-Semester",
         "authors":[ "Jurek", "Florian", "Myrijam", "Christopher", "Youshua", "Felix" ]
     })
 
